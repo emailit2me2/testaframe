@@ -24,7 +24,16 @@ class ByBase(object):
 
   def find_name(self):
     # This is kind of odd but we want to know what this variable is named in
-    # the outside world.  Rather than having to pass in a string name.
+    # the outside world, rather than having to pass in a string name.
+    # This is done to make the logs more readable and reduce the DRY in prep_finders().
+    # For example, in gui_pages.py:AjaxyPage._prep_finders() the following line
+    #       self.new_label_field = self.by_name('typer')
+    # would need to have a name passed in to yield the logging verboseness we want
+    #       self.new_label_field = self.by_name('new_label_field','typer')
+    # The logs for this are super clear and the code is DRY
+    #       find element 'new_label_field' using name='typer'
+    #       type into 'new_label_field' using name='typer' = u'...'
+    # TODO we should cache this value once we look it up.
     frame = sys._getframe()
     for frame in iter(lambda: frame.f_back, None):
       frame.f_locals
@@ -49,8 +58,9 @@ class ByBase(object):
         all.append([e.text for e in self.page.find_all(cell_spec, e)])
       return all
   def the_attribute(self, attrib, index=0):
-    #return self.page.find_all(self)[index].get_attribute(attrib)
-    return self.page.find_the(self).get_attribute(attrib)
+    print "         attribute %r for %s" % (attrib,self)
+    return self.page.find_all(self)[index].get_attribute(attrib)
+    #return self.page.find_the(self).get_attribute(attrib)
   def all_the_attributes(self, attrib):
     all = self.page.find_all(self)
     return [e.get_attribute(attrib) for e in all]

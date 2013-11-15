@@ -28,6 +28,7 @@ except ImportError:
 #
 
 class BaseSutEnvMixin(object):
+  # MY_JS is for bookmarklets like pinterest
   MY_JS = '''var s=document.createElement('script');s.id='my_script';s.type='text/javascript';s.src='http://%s/my_js';'''
   def env_data_builder(self, svc):
     assert False, "Must be overridden"
@@ -57,6 +58,8 @@ class BaseSutEnvMixin(object):
     # TODO make sure this still works
 
   ######### Facebook stuff ###########
+  # TODO move this facebook stuff somewhere more appropriate
+  # TODO DRY the facebook stuff
   # http://developers.facebook.com/docs/authentication/applications/
   # https://developers.facebook.com/docs/authentication/client-side/
   # https://developers.facebook.com/apps/APP_ID/permissions
@@ -385,9 +388,6 @@ class Prod_EnvMixin(BaseSutEnvMixin):
     BaseSutEnvMixin.__init__(self,*args)
   def env_data_builder(self, svc):
     self.data = databuilder.ProdDataBuilder(svc)
-#  def env_specific_setup(self):
-#    uniq_user_info = self.data.uniq_user()
-#    tokend = self.svc.person_login(uniq_user_info)
   def env_get_fb_tst_user_quick(self):
     print "Reusing Prod FB test user quick"
     return self.data.persistant_test_user()
@@ -488,7 +488,19 @@ class BaseSeEnvMixin(object):
     return wd
 
 
+class API_SeMixin(BaseSeEnvMixin):
+  # This one is the no selenium mixin
+  # This is a little hokey, but runner.make_derived() adds an SeMixin to the
+  # derived test class
+  def env_prep_for_svc(self):
+    self.base_url = self.env_api_url()
+    self.svc = service.MyService(self.env_api_url(),self.env_allows_writes())
+    self.env_data_builder(self.svc)
+    self.fb_test_users = {}
 
+
+# it feels like there is a lot of boilerplate in these Se mixin classes
+# TODO try to reduce the DRY
 class Local_FF_SeMixin(BaseSeEnvMixin):
   DO_POPUPS_WORK = False
   OS_BROWSER = 'Local_FF'
@@ -759,15 +771,4 @@ class Grid_IE_SeMixin(BaseSeEnvMixin):
     return self.get_grid_wd(caps,host)
   def env_se_driver(self):
     return self.env_driver()
-
-class API_SeMixin(BaseSeEnvMixin):
-  # This one is the no selenium mixin
-  # This is a little hokey, but runner.make_derived() adds an SeMixin to the
-  # derived test class
-  def env_prep_for_svc(self):
-    self.base_url = self.env_api_url()
-    self.svc = service.MyService(self.env_api_url(),self.env_allows_writes())
-    self.env_data_builder(self.svc)
-    self.fb_test_users = {}
-
 

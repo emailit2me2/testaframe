@@ -2,14 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import traceback
-#import random
-#import datetime
-#import urllib
-import urlparse
-import urllib2
-import requests
 
-#from nose.tools import eq_,ok_
 from nose.plugins.attrib import attr
 from nose.plugins.skip import SkipTest
 
@@ -18,29 +11,6 @@ from gui_pages import *
 from base_tst import *
 
 from databuilder import *
-
-# caller() is for use by try_is_*() asserts since the value should not be evaluate
-#   try_is_equal(10, func(x,y))
-# will only evaluate func() once.  But an ajaxy app needs to keep rechecking.
-# It is possible that lambda's will work in this capacity too but there might
-# be issues with Skipped tests.  TODO find out if lambda obsoletes this.
-#    try_is_equal(10, lambda: func(x,y))
-#
-def caller(func, *args):
-  print func, args
-  for i in xrange(TestMyGui.TRIES):
-    try:
-      y = func(*args)
-    except SkipTest:
-      print "    Skipping test from caller()"
-      raise
-    except:
-      traceback.print_exc()
-      y = None  # TODO returning None is dangerous since it could be a valid value
-    #
-    yield y
-  #
-
 
 @attr('MyProject','Gui')
 class MyTestBase(GuiTestCaseBase):
@@ -53,6 +23,7 @@ class MyTestBase(GuiTestCaseBase):
     self.env_teardown()
 
   def execute_js_on(self, page):
+    # for use with bookmarklets
     print "Executing my js for %s" % self.env_sut_host()
     page.execute_javascript(self.env_get_my_js())
 
@@ -64,6 +35,10 @@ class TestMyGui(MyTestBase):
   # then start a simple http server using
   #   python -m SimpleHTTPServer 8000
   # then run these tests.  Add the -s option to see the logs.
+
+  def _skip_func(self, param):
+    self.skip_tst(param)
+
   @attr("Example","Ajax")
   def test_ajaxy(self):
     ajaxy_page = self.start.at(AjaxyPage)
@@ -82,8 +57,11 @@ class TestMyGui(MyTestBase):
     # will fail because the value will not change when the new label appears in the DOM.
     self.try_is_equal([new_label1,new_label2], ajaxy_page.new_labels.all_the_text)
 
+    # Use a lambda if you need to pass parameters (although this is a lame example)
+    self.try_is_equal('label', lambda : ajaxy_page.new_labels.the_attribute('class',index=1))
+
     # A couple things to note in the logs.
     # The first try_is_equal calls .the_text and fails initially because there are
-    # no .label elements in the DOM yet.  The second try_is_equal fails because
+    # no .label elements in the DOM yet.  The second try_is_equal fails initially because
     # the expected and actual values are not yet equal.
 

@@ -197,16 +197,9 @@ class BaseForm(object):
     self.should_not_find_the(element_spec)
 
 
-  # TODO maybe need asserts around find_all
-#  def find_all(self, element_spec):
-#    print "find elements %s" % (element_spec)
-#    return self.driver.find_elements(element_spec.by, element_spec.spec)
   def click_on(self, element_spec, start_with=None):
     e = self.find_the(element_spec, start_with)
     print "click on %s" % (element_spec)
-    # TODO using action chains cuz FF is not clicking correctly with normal .click()
-    #dothis = ActionChains(self.driver).move_to_element(e).click()
-    #dothis.perform()
     e.click()
   def click_one_of(self, element_spec, index, start_with=None):
     start = time.time()
@@ -220,9 +213,6 @@ class BaseForm(object):
       #
     #
     print "click on %s[%d]" % (element_spec,index)
-    # TODO using action chains cuz FF is not clicking correctly with normal .click()
-    #dothis = ActionChains(self.driver).move_to_element(e).click()
-    #dothis.perform()
     e[index].click()
   def select_the(self, element_spec, start_with=None):
     e = self.find_the(element_spec, start_with)
@@ -269,7 +259,6 @@ class BasePage(BaseForm):
     if self.PAGE_SUB and substitutions:
         self.PAGE = self.PAGE_SUB % substitutions
     if not self.PAGE_RE:
-      #self.PAGE_RE = self.PAGE
       self.PAGE_RE = '^' + self.PAGE + '$'
     self._prep_finders()
   def full_url(self):
@@ -346,9 +335,6 @@ class BasePage(BaseForm):
   def close_it(self):
     print "Closing window %s" % self.window_name
     self.factory.close_window_name(self.window_name)
-
-#  def scroll_up(self):
-#    return self.driver.execute_script('scrollTo(0,0);return document.body.scrollHeight')
 
   def get_cookie(self, cookie):
     cookie = self.driver.get_cookie(cookie)
