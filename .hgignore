@@ -1,0 +1,4 @@
+syntax: glob
+*.pyc
+chromedriver.log
+my_cfg.py
