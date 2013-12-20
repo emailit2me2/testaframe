@@ -105,22 +105,22 @@ class BaseForm(object):
     print "     !! waiting %d second(s) because %s !!" % (seconds, comment)
     time.sleep(seconds)
 
-  def by_css(self, locator):
-      return ByCssSelector(self, locator)
-  def by_id(self, locator):
-      return ByID(self, locator)
-  def by_name(self, locator):
-      return ByName(self, locator)
-  def by_tag_name(self, locator):
-      return ByTagName(self, locator)
-  def by_class_name(self, locator):
-      return ByClassName(self, locator)
-  def by_link_text(self, locator):
-      return ByLinkText(self, locator)
-  def by_partial_link_text(self, locator):
-      return ByPartialLinkText(self, locator)
-  def by_xpath(self, locator):
-    return ByXpath(self, locator)
+  def by_css(self, locator, log_type_into=True):
+      return ByCssSelector(self, locator, log_type_into)
+  def by_id(self, locator, log_type_into=True):
+      return ByID(self, locator, log_type_into)
+  def by_name(self, locator, log_type_into=True):
+      return ByName(self, locator, log_type_into)
+  def by_tag_name(self, locator, log_type_into=True):
+      return ByTagName(self, locator, log_type_into)
+  def by_class_name(self, locator, log_type_into=True):
+      return ByClassName(self, locator, log_type_into)
+  def by_link_text(self, locator, log_type_into=True):
+      return ByLinkText(self, locator, log_type_into)
+  def by_partial_link_text(self, locator, log_type_into=True):
+      return ByPartialLinkText(self, locator, log_type_into)
+  def by_xpath(self, locator, log_type_into=True):
+    return ByXpath(self, locator, log_type_into)
 
   def find_the(self, element_spec, start_with=None):
     # time.sleep(1)  # slow down the script for demos
@@ -230,6 +230,9 @@ class BaseForm(object):
         e.clear()
     print "type into %s = %r" % (element_spec, text)
     e.send_keys(text)
+    if not element_spec.log_type_into:  # Don't log passwords and such
+      text = "**supressed**"
+    print "type into %s = %r" % (element_spec, text)
   def clear_field(self, element_spec):
     e = self.find_the(element_spec)
     print "clear field %s" % (element_spec)
