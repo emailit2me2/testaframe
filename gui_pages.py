@@ -12,6 +12,8 @@ from selenium.webdriver.common.keys import Keys
 
 from base_page import BasePage,PageFactory
 
+import our_envs
+
 # There should never be any asserts in pages
 # All asserts should be in the tests.
 
@@ -23,8 +25,8 @@ class MyPageFactory(PageFactory):
       use the regular page class.
   '''
   # TODO what would we do if there needed to be multiple *_pages.py files?
-  def __init__(self, driver, base_url, preclean, platform_suffix):
-    PageFactory.__init__(self, driver, base_url, preclean, platform_suffix)
+  def __init__(self, driver, env, preclean, platform_suffix):
+    PageFactory.__init__(self, driver, env, preclean, platform_suffix)
     self.classes = dict(inspect.getmembers(sys.modules[__name__], inspect.isclass))
 
 class StdPage(BasePage):
@@ -38,6 +40,7 @@ class StdPage(BasePage):
 
 
 class AjaxyPage(StdPage):
+  HOST_ENUM = our_envs.SE_HOST_ENUM
   PAGE = "/ajaxy_page.html"
   def _prep_finders(self):
     StdPage._prep_finders(self)
@@ -65,11 +68,12 @@ class AjaxyPage(StdPage):
 
 # example page object for a wikipedia.org article
 class ArticlePage(StdPage):
-  # Every page needs a PAGE or PAGE_RE (the _RE stands for regular expression,
+  HOST_ENUM = our_envs.WIKI_HOST_ENUM
+  # Every page needs a PAGE (or PAGE_SUB) or PAGE_RE (the _RE stands for regular expression,
   # like the re module) value to make sure the page URL is correct in verify_on_page().
   # If no PAGE_RE exists PAGE will be converted into one.
-  PAGE = "/wiki/"
   PAGE_RE = "^/wiki/.*$"
+  PAGE_SUB = "/wiki/%s"  # A PAGE_SUB creates a PAGE using python's % operator
   def _prep_finders(self):
     StdPage._prep_finders(self)
     self.verify_element = self.by_css('.mediawiki')
