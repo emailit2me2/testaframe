@@ -228,7 +228,6 @@ class BaseForm(object):
     e = self.find_the(element_spec, start_with=None)
     if clear_first:
         e.clear()
-    print "type into %s = %r" % (element_spec, text)
     e.send_keys(text)
     if not element_spec.log_type_into:  # Don't log passwords and such
       text = "**supressed**"
