@@ -19,9 +19,9 @@ class PageFactory(object):
    only it has the cross page context
   '''
   MAIN_WINDOW = 'main'
-  def __init__(self, driver, base_url, preclean, platform_suffix):
+  def __init__(self, driver, env, preclean, platform_suffix):
     self.driver = driver
-    self.base_url = base_url
+    self.env = env
     self.handles = {}
     self.preclean = preclean
     self.platform_suffix = platform_suffix
@@ -264,9 +264,7 @@ class BasePage(BaseForm):
       self.PAGE_RE = '^' + self.PAGE + '$'
     self._prep_finders()
   def full_url(self):
-    base_url = self.factory.base_url
-    if self.BASE_URL:
-      base_url = self.BASE_URL
+    base_url = self.factory.env.env_get_url(self.HOST_ENUM)
     url = urlparse.urljoin(base_url, self.PAGE+self.params)
     #print "full url is %s" % url
     return url

@@ -25,23 +25,25 @@ try:
   import my_cfg
 except ImportError:
   raise Exception("You must create 'my_cfg.py'.  See: my_cfg_example.py")
-#
+# my_cfg.py is specific to each personal (or environment (e.g. CI))
+
+# our_envs.py is specific to a project or company (in general).
+import our_envs
 
 class BaseSutEnvMixin(object):
   # MY_JS is for bookmarklets like pinterest
   MY_JS = '''var s=document.createElement('script');s.id='my_script';s.type='text/javascript';s.src='http://%s/my_js';'''
   def env_data_builder(self, svc):
     assert False, "Must be overridden"
-  def env_api_host(self):
-    return self.HOST
-  def env_gui_host(self):
-    return self.HOST
-  def env_api_url(self):
-    return '%s' % (self.API_URL,)
-  def env_gui_base_url(self):
-    return self.GUI_URL
+  def __repr__(self):
+    return "%s_env" % self.ENV_NAME
+  def env_get_host(self, host_enum):
+    return our_envs.envs[self.ENV_NAME][our_envs.HOSTS_ENUM][host_enum][our_envs.HOST_SPEC_ENUM]
+  def env_get_url(self, host_enum):
+    return our_envs.envs[self.ENV_NAME][our_envs.HOSTS_ENUM][host_enum][our_envs.URL_TMPL_ENUM] % (self.env_get_host(host_enum))
   def env_allows_writes(self):
-    assert False, "env_allows_writes() must be implemented by each env: %r" % repr(self)
+    assert our_envs.envs[self.ENV_NAME].has_key(our_envs.ALLOWS_WRITES_ENUM), "ALLOWS_WRITES_ENUM must be defined by each env: %r" % repr(self)
+    return our_envs.envs[self.ENV_NAME][our_envs.ALLOWS_WRITES_ENUM]
   def assert_env_allows_writes(self):
     #print "checking if writes are allowed"
     if not self.env_allows_writes():
@@ -260,137 +262,48 @@ class BaseSutEnvMixin(object):
           r.content)
       return None
 
-# All these env settings should probably be in a config somewhere
-# All the env specifics should be in a seperate project specific file.
 class Localhost_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'Localhost'
-  HOST = my_cfg.config['HOST']['LOCALHOST']
-  #API_URL = 'http://%s' % HOST
-  API_URL = 'http://freegeoip.net'  # Using a freegeoIP service as an example
-  GUI_URL = 'http://%s:8000' % HOST
-  COOKIE_SECRET = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "Localhost_env"
-  def env_allows_writes(self):
-    return True
+  ENV_NAME = our_envs.LOCALHOST_ENV
   def env_data_builder(self, svc):
     self.data = databuilder.TestDataBuilder(svc)
 
 class LocalVM_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'LocalVM'
-  HOST = my_cfg.config['HOST']['LOCALVM']
-  API_URL = 'http://%s' % HOST
-  GUI_URL = 'http://%s:8000' % HOST
-  COOKIE_SECRET = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "LocalVM_env"
-  def env_allows_writes(self):
-    return True
+  ENV_NAME = our_envs.LOCAL_VM_ENV
   def env_data_builder(self, svc):
     self.data = databuilder.TestDataBuilder(svc)
 
 class Dev_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'Dev'
-  HOST = 'your dev host'
-  API_URL = 'http://%s' % HOST
-  GUI_URL = 'http://%s:8000' % HOST
-  COOKIE_SECRET = r''
-  FB_NAMESPACE = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "Dev_env"
-  def env_allows_writes(self):
-    return True
+  ENV_NAME = our_envs.DEV_ENV
   def env_data_builder(self, svc):
     self.data = databuilder.TestDataBuilder(svc)
 
 class CI_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'CI'
-  HOST = 'your CI host'
-  API_URL = 'http://%s' % HOST
-  GUI_URL = 'http://%s' % HOST
-  COOKIE_SECRET = r''
-  FB_NAMESPACE = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "CI_env"
-  def env_allows_writes(self):
-    print "are writes allowed in CI_env"
-    return True
+  ENV_NAME = our_envs.CI_ENV
   def env_data_builder(self, svc):
     self.data = databuilder.CIDataBuilder(svc)
 
 class QA_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'QA'
-  HOST = 'your QA host'
-  API_URL = 'http://%s' % HOST
-  GUI_URL = 'http://%s' % HOST
-  COOKIE_SECRET = r''
-  FB_NAMESPACE = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "QA_env"
-  def env_allows_writes(self):
-    print "are writes allowed in QA_env"
-    return True
+  ENV_NAME = our_envs.QA_ENV
   def env_data_builder(self, svc):
     self.data = databuilder.QADataBuilder(svc)
 
 class Staging_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'Staging'
-  HOST = 'you staging host'
-  API_URL = 'http://%s' % HOST
-  GUI_URL = 'http://%s' % HOST
-  COOKIE_SECRET = r''
-  FB_NAMESPACE = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "Staging_env"
-  def env_allows_writes(self):
-    print "are writes allowed in Staging_env"
-    return True
+  ENV_NAME = our_envs.STAGING_ENV
   def env_data_builder(self, svc):
     self.data = databuilder.StagingDataBuilder(svc)
 
 class Prod_EnvMixin(BaseSutEnvMixin):
-  ENV_NAME = 'Prod'
-  HOST = 'your prod host'
-  API_URL = 'http://%s' % HOST
-  GUI_URL = 'http://%s' % HOST
-  COOKIE_SECRET = r''
-  FB_NAMESPACE = ''
-  FB_APP_ID = ''
-  FB_APP_SECRET = ''
-  FB_APP_TOKEN = "|"
-  def __repr__(self):
-    return "Prod_env"
-  def env_allows_writes(self):
-    return False
+  ENV_NAME = our_envs.PROD_ENV
   def __init__(self,*args):
     import sys
     assert [arg for arg in sys.argv if ('ProdSafe' in arg or 'ProdMonitor' in arg)], "run_PROD.py should only be run with -a ProdSafe|ProdMonitor."
     assert ['-a'] == [arg for arg in sys.argv if arg.startswith('-a')], "run_PROD.py multiple -a args are or'ed, should be '-a ProdSafe,Smoke'."
-    assert [] == [arg for arg in sys.argv if arg.startswith('--processes')], "run_PROD.py can not be run multiprocess."
+    #assert [] == [arg for arg in sys.argv if arg.startswith('--processes')], "run_PROD.py can not be run multiprocess."
+    # fail for multiprocess in Prod_env (above) or only warn (below)  # TODO add to our_envs.py
+    if [] != [arg for arg in sys.argv if arg.startswith('--processes')]: print "Warning: running multiprocess can be dangerous against Prod."
     BaseSutEnvMixin.__init__(self,*args)
   def env_data_builder(self, svc):
-    self.data = databuilder.ProdDataBuilder(svc)
-  def env_get_fb_tst_user_quick(self):
-    print "Reusing Prod FB test user quick"
-    return self.data.persistant_test_user()
+    self.data = databuilder.ProdDataBuilder()
 
 
 class BaseSeEnvMixin(object):
@@ -400,10 +313,9 @@ class BaseSeEnvMixin(object):
   def env_prep_for_se(self):
     try:
       self.driver = self.env_se_driver()
-      self.base_url = self.env_gui_base_url()
-      self.start = gui_pages.MyPageFactory(self.driver, self.base_url, self.NEED_PRECLEAN, self.env_platform_suffix())
+      self.start = gui_pages.MyPageFactory(self.driver, self, self.NEED_PRECLEAN, self.env_platform_suffix())
       self.driver.implicitly_wait(1)
-      self.svc = service.MyService(self.env_api_url(),self.env_allows_writes())
+      self.svc = service.MyService(self.env_get_url(our_envs.DB_SVC_HOST_ENUM),self.env_allows_writes())
       self.env_data_builder(self.svc)
       self.env_specific_setup()
       self.fb_test_users = {}
@@ -489,18 +401,18 @@ class BaseSeEnvMixin(object):
 
 
 class API_SeMixin(BaseSeEnvMixin):
+  HOST_ENUM = our_envs.API_HOST_ENUM
   # This one is the no selenium mixin
   # This is a little hokey, but runner.make_derived() adds an SeMixin to the
   # derived test class
   def env_prep_for_svc(self):
-    self.base_url = self.env_api_url()
-    self.svc = service.MyService(self.env_api_url(),self.env_allows_writes())
+    self.svc = service.MyService(self.env_get_url(self.HOST_ENUM),self.env_allows_writes())
     self.env_data_builder(self.svc)
     self.fb_test_users = {}
 
 
 # it feels like there is a lot of boilerplate in these Se mixin classes
-# TODO try to reduce the DRY
+# TODO try to reduce the DRY.  Maybe a similar technique to our_envs.py.
 class Local_FF_SeMixin(BaseSeEnvMixin):
   DO_POPUPS_WORK = False
   OS_BROWSER = 'Local_FF'

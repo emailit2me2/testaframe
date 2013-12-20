@@ -65,3 +65,8 @@ class TestMyGui(MyTestBase):
     # no .label elements in the DOM yet.  The second try_is_equal fails initially because
     # the expected and actual values are not yet equal.
 
+  @attr('Example')
+  def test_wikipedia(self):
+    article_to_use = 'YAML'
+    article_page = self.start.at(ArticlePage, substitutions=(article_to_use))
+    self.is_in(article_to_use, article_page.get_title)

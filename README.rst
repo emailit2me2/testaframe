@@ -21,6 +21,10 @@ then modify the run_*.py files to use the new test files.
 Required libraries
   see pip_requirements.txt
 
+You will need to create a personal my_cfg.py on your local machine by
+using my_cfg_example.py as an example.
+The my_cfg.py file should be .ignored in your source control.
+
 Running the tests
 The tests must be run inside nosetests using a specific run_*.py file.  For example
   nosetests run_local.py
@@ -35,6 +39,8 @@ While tests are running the browser will be opening and closing and basically
 making your desktop machine unusable for anything else.  So start up a VNC server
 and a VNC viewer and then run the tests pointing to that display.
   DISPLAY=localhost:7 nosetests run_local.py -v
+
+The our_envs.py file will need to be customized for your project/company.
 
 Files
 Test files should end in _test.py if they should be discovered, and _tst.py
@@ -78,9 +84,9 @@ test function the setup must be run which launches a browser.
 
 Runners
 The run_*.py files use the "execute the config" design pattern.  This is partly because
-you can't inject command line paramaters into unit tests.
-You want one test function to run on multiple different OS/Browsers combinations
-against multiple different environments(e.g. CI, QA, localhost, Staging, Prod).
+you can't inject command line parameters into unit tests.
+You usually want one test function to run on multiple different OS/Browser combinations
+against multiple different environments (e.g. CI, QA, localhost, Staging, Prod).
 So the use of mixins allows the selected combinations to be added to dynamically
 generated classes that get discovered by nose.
 
@@ -94,4 +100,6 @@ Test Data Builder Pattern
 Many of the features were designed to make the logging output much easier to read
 for less technical readers (e.g. managers, business people, manual testers).
 
-
+There is the start to a Ruby implementation of testaframe in the ruby/ subdirectory.
+There are pros and cons to each implementation, but the multiprocess support in
+nosetests was a big factor in focusing on Python.
