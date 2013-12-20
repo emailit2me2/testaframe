@@ -14,9 +14,10 @@ class ByBase(object):
 
   # TODO support indexing, thing[2].the_text() or thing.the_text(2)
 
-  def __init__(self, page, spec):
+  def __init__(self, page, spec, log_type_into):
     self.page = page
     self.spec = spec
+    self.log_type_into = log_type_into
     assert self.by, "self.by must be defined by subclasses"
   def __log_action(self, action):
     item_name = self.find_name()

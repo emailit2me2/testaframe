@@ -46,6 +46,8 @@ class AjaxyPage(StdPage):
     self.new_label_field = self.by_name('typer')
     self.new_label_form = self.by_css('form')  # forms should have ID's for real code
     self.new_labels = self.by_css('.label')
+    # setting log_type_into=False suppresses printing of the passed in text
+    self.password_field = self.by_css('#input-password',log_type_into=False) #suppresses
   def fillout_form(self, new_label):
     self.type_into(self.new_label_field, new_label)
   # It is common to split filling out a form and submitting a form so you can test error cases
