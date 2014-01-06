@@ -11,6 +11,7 @@ import selenium
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select
 
 from locate import *
@@ -377,3 +378,17 @@ class BasePage(BaseForm):
 
   def set_cookie(self, cookie, value):
     self.driver.add_cookie({'name' : cookie, 'value' : value})
+
+  def get_alert(self):
+    self.wait1.until(expected_conditions.alert_is_present())
+    return AlertObj(self.driver)
+
+# This AlertObj is not great.  TODO make it better.
+class AlertObj(object):
+  def __init__(self, driver):
+    self.alert = Alert(driver)
+    print "Creating alert"
+  def choose_accept(self):
+    print "Choosing accept on alert"
+    self.alert.accept()
+    print "Accept chosen on alert"

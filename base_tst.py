@@ -17,8 +17,8 @@ from nose.plugins.skip import SkipTest
 from selenium.common.exceptions import WebDriverException,StaleElementReferenceException
 
 class TestCaseBase(object):
-  TIME_TO_WAIT = 10  # TODO factor out all the constants and delays and retries.
-  POLLING_DELAY = 0.1  # TODO factor out all the constants and delays and retries.
+  _TIME_TO_WAIT = 10  # TODO factor out all the constants and delays and retries.
+  _POLLING_DELAY = 0.1  # TODO factor out all the constants and delays and retries.
   __test__ = True  # needed for nose matching without inheriting from unittest.TestCase
   def XFAIL(self, msg, f, args):
     try:
@@ -38,6 +38,25 @@ class TestCaseBase(object):
 
   def print_pass(self, msg):
     print "PASS: %s" % msg
+
+  def setUp(self):
+    self.default_poll_max = self._TIME_TO_WAIT
+    self.set_poll_max(self.default_poll_max)
+    self.default_poll_delay = self._POLLING_DELAY
+    self.set_poll_delay(self.default_poll_delay)
+  def set_poll_max(self, poll_max=-1, message=''):
+    if poll_max < 0:
+      self.poll_max = self.default_poll_max
+    else:
+      self.poll_max = poll_max
+    print "Setting poll max to %r %s" % (self.poll_max,message)
+
+  def set_poll_delay(self, poll_delay=-1, message=''):
+    if poll_delay < 0:
+      self.poll_delay = self.default_poll_delay
+    else:
+      self.poll_delay = poll_delay
+    print "Setting poll delay to %r %s" % (self.poll_delay,message)
 
   def is_op(self, a, op, sym, g, msg, only_if):
     try:
@@ -69,7 +88,7 @@ class TestCaseBase(object):
       return
 
     start = time.time()
-    while time.time() - start < self.TIME_TO_WAIT:
+    while time.time() - start < self.poll_max:
       try:
         try:
           g_a = ag()
@@ -101,13 +120,13 @@ class TestCaseBase(object):
         return ret
       except WebDriverException, exc:
         print "  Waiting for element(s): %5.2fsecs" % (time.time() - start)
-        time.sleep(self.POLLING_DELAY)
+        time.sleep(self.poll_delay)
       except StaleElementReferenceException, exc:
         print "  Stale element Exception: %5.2fsecs - %s" % ((time.time() - start), exc)
-        time.sleep(self.POLLING_DELAY)
+        time.sleep(self.poll_delay)
       except AssertionError, exc:
         print "  Waiting for try_is(%s): %5.2fsecs" % (sym, time.time() - start)
-        time.sleep(self.POLLING_DELAY)
+        time.sleep(self.poll_delay)
       except StopIteration, exc:
         # once a generator raises an exception you can't call it again, so fail.
         print "  Strange Exception broke a generator"
@@ -118,7 +137,7 @@ class TestCaseBase(object):
       except Exception, exc:
         # catchall for any other things that might go wrong
         print "  General Exception: %5.2fsecs - %s" % ((time.time() - start), exc)
-        time.sleep(self.POLLING_DELAY)
+        time.sleep(self.poll_delay)
       #
     # end while
     raise exc
@@ -200,5 +219,5 @@ class TestCaseBase(object):
 
 
 class GuiTestCaseBase(TestCaseBase):
-  TIME_TO_WAIT = 10  # TODO factor out all the constants and delays and retries.
-
+  def setUp(self):
+    TestCaseBase.setUp(self)
