@@ -1,7 +1,6 @@
 
 import sys
 import time
-import inspect
 #import urllib
 #import urlparse
 
@@ -10,24 +9,12 @@ import inspect
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-from base_page import BasePage,PageFactory
+from base_page import BasePage
 
 import our_envs
 
 # There should never be any asserts in pages
 # All asserts should be in the tests.
-
-class MyPageFactory(PageFactory):
-  ''' This is here to help with the platform_suffix problem.  Since it is here
-      it can autodiscover all the page classes in this file, and then if a
-      test requests a new page, the factory can look at all page classes and see
-      if there is a platform specific one and instantiate it, otherwise just
-      use the regular page class.
-  '''
-  # TODO what would we do if there needed to be multiple *_pages.py files?
-  def __init__(self, driver, env, preclean, platform_suffix, default_highlight_delay):
-    PageFactory.__init__(self, driver, env, preclean, platform_suffix, default_highlight_delay)
-    self.classes = dict(inspect.getmembers(sys.modules[__name__], inspect.isclass))
 
 class StdPage(BasePage):
   LOGIN_LINK_TEXT = 'Log In'
@@ -76,6 +63,7 @@ class AlertsPage(StdPage):
     alert_dialog = self.get_alert()
     alert_dialog.choose_accept()
 
+# TODO maybe move the wiki objects out into wiki_pages.py to better show multifile setups.
 
 # example page object for a wikipedia.org article
 class ArticlePage(StdPage):
@@ -88,3 +76,13 @@ class ArticlePage(StdPage):
   def _prep_finders(self):
     StdPage._prep_finders(self)
     self.verify_element = self.by_css('.mediawiki')
+
+class ArticlePageFF(ArticlePage):
+  '''This class is a trivial example of how to use platform specific classes.
+     The use case that inspired this feature was Facebook login on iOS, which is
+     different than for a desktop.  So we needed a different page object for iOS.
+     In this case env.py:Local_FF_SeMixin has PLATFORM_SUFFIX set to 'FF' so
+     if you run with browser Local_FF enabled it will create this page object (noted
+     in the logs) but any other browser will just create the general ArticlePage above.
+  '''
+  pass

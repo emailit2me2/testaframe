@@ -2,6 +2,7 @@
 import re
 import time
 import urllib
+import inspect
 import urlparse
 import traceback
 
@@ -21,13 +22,14 @@ class PageFactory(object):
    only it has the cross page context
   '''
   MAIN_WINDOW = 'main'
-  def __init__(self, driver, env, preclean, platform_suffix, default_highlight_delay):
+  def __init__(self, driver, env, preclean, page_classes, platform_suffix, default_highlight_delay):
     self.driver = driver
     self.env = env
     self.handles = {}
     self.preclean = preclean
     self.platform_suffix = platform_suffix
     self.classes = {}
+    self.find_page_classes(page_classes)
     self.default_highlight_delay = default_highlight_delay
     self.set_highlight_delay(self.default_highlight_delay)
   def set_highlight_delay(self, highlight_delay=-1):
@@ -37,13 +39,25 @@ class PageFactory(object):
       self.highlight_delay = highlight_delay
     print "Setting highlight delay to %r" % self.highlight_delay
 
+  def find_page_classes(self, modules):
+    '''This is here to help with the platform_suffix problem.  Since it is here
+       it can autodiscover all the page classes in each file, and then if a
+       test requests a new page, the factory can look at all page classes and see
+       if there is a platform specific one and instantiate it, otherwise just
+       use the regular page class.'''
+      # TODO can you protect from collisions in different gui files?
+      # don't think so because BasePage you be duplicated by import in all files
+    for module in modules:
+      self.classes.update(dict(inspect.getmembers(sys.modules[module.__name__], inspect.isclass)))
+
   def make_page(self, page_class, params, substitutions):
     plat_cls_name = page_class.__name__+self.platform_suffix
-    plat_class = self.classes[plat_cls_name]
-    if self.platform_suffix:
-      print "Made a platform specific page: %s\n" % (plat_cls_name)
+    plat_class = self.classes.get(plat_cls_name, page_class)
+    if page_class != plat_class:
+      print "Making a platform specific page: %s" % (plat_cls_name)
     # end if a platform specific class exists
-    new_page = page_class(self, params, substitutions)
+    new_page = plat_class(self, params, substitutions)
+    print "Created page object", new_page.__class__.__name__
     return new_page
 
   def on_page(self, page_class, params='', substitutions=()):
@@ -244,7 +258,7 @@ class BaseForm(object):
         break
       else:
         print "  Waiting for %d >= %d elements: %5.2f secs" % (len(e), index+1, time.time() - start)
-        time.sleep(0.1)
+        time.sleep(self.POLLING_DELAY)
       #
     #
     print "click on %s[%d]" % (element_spec,index)
