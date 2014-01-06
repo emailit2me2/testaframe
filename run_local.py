@@ -19,8 +19,8 @@ environments = [
 #  'QA',
   ]
 browsers = [
-#  'Local_FF',
-  'Local_Chrome',
+  'Local_FF',  # FF doesn't need a driver download, unlike Chrome/IE, so easier out of box.
+#  'Local_Chrome',
 #  'Local_IE',
 #  'Linux_FF',
 #  'Linux_Chrome',

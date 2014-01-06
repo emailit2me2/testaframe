@@ -16,10 +16,17 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import selenium.common.exceptions
 
-#import base_page
+import base_page
 import gui_pages  # Wish this didn't have to be in here polluting
 import databuilder
 import service
+
+''' This is here to help with the platform_suffix problem.
+    Technically only gui_pages that have platform specific pages need to be listed here.
+    But it will silently use the generic class, even if you were expecting it to
+    use the platform specific one.  So best to list all gui classes here.
+'''
+ALL_GUI_MODULES = [gui_pages,]
 
 try:
   import my_cfg
@@ -313,7 +320,7 @@ class BaseSeEnvMixin(object):
   def env_prep_for_se(self):
     try:
       self.driver = self.env_se_driver()
-      self.start = gui_pages.MyPageFactory(self.driver, self, self.NEED_PRECLEAN, self.env_platform_suffix(),my_cfg.config.get('HIGHLIGHT_DELAY', 0))
+      self.start = base_page.PageFactory(self.driver, self, self.NEED_PRECLEAN, ALL_GUI_MODULES, self.env_platform_suffix(),my_cfg.config.get('HIGHLIGHT_DELAY', 0))
       self.driver.implicitly_wait(1)
       self.svc = service.MyService(self.env_get_url(our_envs.DB_SVC_HOST_ENUM),self.env_allows_writes())
       self.env_data_builder(self.svc)
@@ -328,7 +335,7 @@ class BaseSeEnvMixin(object):
 
   def env_restart_driver(self):
     self.driver = self.env_se_driver()
-    self.start = gui_pages.MyPageFactory(self.driver, self.base_url, self.NEED_PRECLEAN, self.env_platform_suffix(),my_cfg.config.get('HIGHLIGHT_DELAY', 0))
+    self.start = base_page.PageFactory(self.driver, self.base_url, self.NEED_PRECLEAN,ALL_GUI_MODULES, self.env_platform_suffix(),my_cfg.config.get('HIGHLIGHT_DELAY', 0))
     self.driver.implicitly_wait(1)
 
   def find_error_messages(self):
@@ -423,6 +430,7 @@ class API_SeMixin(BaseSeEnvMixin):
 class Local_FF_SeMixin(BaseSeEnvMixin):
   DO_POPUPS_WORK = False
   OS_BROWSER = 'Local_FF'
+  PLATFORM_SUFFIX = 'FF'
   def my_se(self):
     return "Local_FF Se for %s" % self.__class__.__name__
   def env_se_driver(self):
