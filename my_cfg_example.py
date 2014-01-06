@@ -36,10 +36,11 @@ config = {
     'LOCALHOST': LOCALHOST,
     'LOCALVM': LOCALVM,
   },
-  # Files are saved in your temp dir as:
+  # Files are saved in your temp dir (unless SNAPSHOT_DIR is specified) as:
   #  snap_<test desc>.png and source_<test desc>.html
   'SAVE_SCREENSHOT': False,
   'SAVE_SOURCE': False,
+  #'SNAPSHOT_DIR_AUTOCREATE': False,  # create dir, if it doesn't exist
   #'SNAPSHOT_DIR': '/tmp/',
   'HIGHLIGHT_DELAY': 1,  # Highlight is on by default for "out-of-box" experience purposes.
                          # Highlight's initial use cases are demos and debugging.

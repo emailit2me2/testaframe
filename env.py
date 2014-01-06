@@ -349,21 +349,28 @@ class BaseSeEnvMixin(object):
       # TODO maybe add datetimestamp.
       # TODO maybe only capture if a failing test, if we can tell
       errors = self.find_error_messages()
+      snapshot_dir = my_cfg.config.get('SNAPSHOT_DIR', '')
+      if snapshot_dir:
+        if my_cfg.config.get('SNAPSHOT_DIR_AUTOCREATE', False) and not os.path.exists(snapshot_dir):
+          print "Autocreating snapshot dir: %r" % snapshot_dir
+          os.makedirs(snapshot_dir)
+      else:
+        snapshot_dir = tempfile.gettempdir()
       if errors or my_cfg.config.get('SAVE_SCREENSHOT', False):
         # TODO make an option for named screenshot and/or latest
-        snap = os.path.join(tempfile.gettempdir(),"snap_%s.png" % self.find_tst_name())
+        snap = os.path.join(snapshot_dir,"snap_%s.png" % self.find_tst_name())
         print "saving screenshot as: %s" % snap
         self.driver.get_screenshot_as_file(snap)
-        snap = os.path.join(tempfile.gettempdir(),"snap_%s.png" % 'last_test')
+        snap = os.path.join(snapshot_dir,"snap_%s.png" % 'last_test')
         print "saving screenshot as: %s" % snap
         self.driver.get_screenshot_as_file(snap)
       if errors or my_cfg.config.get('SAVE_SOURCE', False):
-        source = os.path.join(tempfile.gettempdir(),"source_%s.html" % self.find_tst_name())
+        source = os.path.join(snapshot_dir,"source_%s.html" % self.find_tst_name())
         print "saving source as: %s" % source
         f = open(source,'wb')
         f.write((self.driver.page_source).encode('utf8'))
         f.close()
-        source = os.path.join(tempfile.gettempdir(),"source_%s.html" %  'last_test')
+        source = os.path.join(snapshot_dir,"source_%s.html" %  'last_test')
         print "saving source as: %s" % source
         f = open(source,'wb')
         f.write((self.driver.page_source).encode('utf8'))
