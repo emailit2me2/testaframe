@@ -38,9 +38,9 @@ class BaseSutEnvMixin(object):
   def __repr__(self):
     return "%s_env" % self.ENV_NAME
   def env_get_host(self, host_enum):
-    return our_envs.envs[self.ENV_NAME][our_envs.HOSTS_ENUM][host_enum][our_envs.HOST_SPEC_ENUM]
+    return our_envs.envs[self.ENV_NAME][host_enum][our_envs.HOST_SPEC_ENUM]
   def env_get_url(self, host_enum):
-    return our_envs.envs[self.ENV_NAME][our_envs.HOSTS_ENUM][host_enum][our_envs.URL_TMPL_ENUM] % (self.env_get_host(host_enum))
+    return our_envs.envs[self.ENV_NAME][host_enum][our_envs.URL_TMPL_ENUM] % (self.env_get_host(host_enum))
   def env_allows_writes(self):
     assert our_envs.envs[self.ENV_NAME].has_key(our_envs.ALLOWS_WRITES_ENUM), "ALLOWS_WRITES_ENUM must be defined by each env: %r" % repr(self)
     return our_envs.envs[self.ENV_NAME][our_envs.ALLOWS_WRITES_ENUM]
