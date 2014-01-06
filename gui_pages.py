@@ -25,8 +25,8 @@ class MyPageFactory(PageFactory):
       use the regular page class.
   '''
   # TODO what would we do if there needed to be multiple *_pages.py files?
-  def __init__(self, driver, env, preclean, platform_suffix):
-    PageFactory.__init__(self, driver, env, preclean, platform_suffix)
+  def __init__(self, driver, env, preclean, platform_suffix, default_highlight_delay):
+    PageFactory.__init__(self, driver, env, preclean, platform_suffix, default_highlight_delay)
     self.classes = dict(inspect.getmembers(sys.modules[__name__], inspect.isclass))
 
 class StdPage(BasePage):

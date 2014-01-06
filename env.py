@@ -313,7 +313,7 @@ class BaseSeEnvMixin(object):
   def env_prep_for_se(self):
     try:
       self.driver = self.env_se_driver()
-      self.start = gui_pages.MyPageFactory(self.driver, self, self.NEED_PRECLEAN, self.env_platform_suffix())
+      self.start = gui_pages.MyPageFactory(self.driver, self, self.NEED_PRECLEAN, self.env_platform_suffix(),my_cfg.config.get('HIGHLIGHT_DELAY', 0))
       self.driver.implicitly_wait(1)
       self.svc = service.MyService(self.env_get_url(our_envs.DB_SVC_HOST_ENUM),self.env_allows_writes())
       self.env_data_builder(self.svc)
@@ -328,7 +328,7 @@ class BaseSeEnvMixin(object):
 
   def env_restart_driver(self):
     self.driver = self.env_se_driver()
-    self.start = gui_pages.MyPageFactory(self.driver, self.base_url, self.NEED_PRECLEAN, self.env_platform_suffix())
+    self.start = gui_pages.MyPageFactory(self.driver, self.base_url, self.NEED_PRECLEAN, self.env_platform_suffix(),my_cfg.config.get('HIGHLIGHT_DELAY', 0))
     self.driver.implicitly_wait(1)
 
   def find_error_messages(self):

@@ -40,5 +40,8 @@ config = {
   #  snap_<test desc>.png and source_<test desc>.html
   'SAVE_SCREENSHOT': False,
   'SAVE_SOURCE': False,
-  #'SNAPSHOT_DIR': '/tmp/'
+  #'SNAPSHOT_DIR': '/tmp/',
+  'HIGHLIGHT_DELAY': 1,  # Highlight is on by default for "out-of-box" experience purposes.
+                         # Highlight's initial use cases are demos and debugging.
+                         # TODO you probably want this off for your day to day work.
 }

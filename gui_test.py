@@ -45,7 +45,11 @@ class TestMyGui(MyTestBase):
     new_label1 = self.data.uniq_comment()['stripped_comment']
     ajaxy_page.fillout_form(new_label1)
     ajaxy_page.submit_fillout_form()
+    # The assert has to check several times while waiting for the page, so blink quickly
+    # and this is also here as an example.  See also my_cfg.py HIGHLIGHT_DELAY option
+    self.start.set_highlight_delay(1)
     self.try_is_equal(new_label1, ajaxy_page.new_labels.the_text)
+    self.start.set_highlight_delay()  # set delay back to default.
 
     new_label2 = self.data.uniq_comment()['stripped_comment']
     ajaxy_page.fillout_form(new_label2)

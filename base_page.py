@@ -8,6 +8,7 @@ import traceback
 import selenium
 #from selenium.common.exceptions import NoSuchElementException
 #from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.ui import Select
@@ -19,13 +20,21 @@ class PageFactory(object):
    only it has the cross page context
   '''
   MAIN_WINDOW = 'main'
-  def __init__(self, driver, env, preclean, platform_suffix):
+  def __init__(self, driver, env, preclean, platform_suffix, default_highlight_delay):
     self.driver = driver
     self.env = env
     self.handles = {}
     self.preclean = preclean
     self.platform_suffix = platform_suffix
     self.classes = {}
+    self.default_highlight_delay = default_highlight_delay
+    self.set_highlight_delay(self.default_highlight_delay)
+  def set_highlight_delay(self, highlight_delay=-1):
+    if highlight_delay < 0:
+      self.highlight_delay = self.default_highlight_delay
+    else:
+      self.highlight_delay = highlight_delay
+    print "Setting highlight delay to %r" % self.highlight_delay
 
   def make_page(self, page_class, params, substitutions):
     plat_cls_name = page_class.__name__+self.platform_suffix
@@ -121,6 +130,29 @@ class BaseForm(object):
       return ByPartialLinkText(self, locator, log_type_into)
   def by_xpath(self, locator, log_type_into=True):
     return ByXpath(self, locator, log_type_into)
+  def highlight(self, element):
+      """Highlights (blinks) a Selenium Webdriver element"""
+      if not self.factory.highlight_delay: return
+      def apply_style(s):
+          self.driver.execute_script("arguments[0].setAttribute('style', arguments[1]);",
+                                element, s)
+      original_style = element.get_attribute('style')
+      apply_style("background: yellow; border: 2px solid red;")
+      time.sleep(self.factory.highlight_delay)
+      apply_style(original_style)
+  def highlight_all(self, elements):
+      """Highlights (blinks) a Selenium Webdriver element"""
+      if not self.factory.highlight_delay: return
+      def apply_style(s):
+          self.driver.execute_script("arguments[0].setAttribute('style', arguments[1]);",
+                                element, s)
+      original_styles = []
+      for element in elements:
+        original_styles.append(element.get_attribute('style'))
+        apply_style("background: yellow; border: 2px solid red;")
+      time.sleep(self.factory.highlight_delay)
+      for element in elements:
+        apply_style(original_styles.pop(0))
 
   def find_the(self, element_spec, start_with=None):
     # time.sleep(1)  # slow down the script for demos
@@ -136,6 +168,7 @@ class BaseForm(object):
     while time.time() - start < self.TIME_TO_WAIT:
       try:
         ret = start_with.find_element(element_spec.by, element_spec.spec)
+        self.highlight(ret)
         #print "  found", ret
         if ret:
           return ret
@@ -171,6 +204,7 @@ class BaseForm(object):
       try:
         ret = start_with.find_elements(element_spec.by, element_spec.spec)
         print "  found %d element(s)" % len(ret)
+        self.highlight_all(ret)
         return ret
       except selenium.common.exceptions.WebDriverException:
         print "  Waiting for elements: %5.2f secs" % (time.time() - start)
