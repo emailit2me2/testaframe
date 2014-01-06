@@ -39,6 +39,5 @@ browsers = [
 #  'Grid_IE',
 ]
 
-exec(runner.make_composed(gui_tests, environments, browsers))
-#exec(runner.make_derived(gui_tests, environments, browsers))
-#exec(runner.make_derived(api_tests, environments, ['API',]))
+exec(runner.make_derived(gui_tests, environments, browsers))
+exec(runner.make_derived(api_tests, environments, ['API',]))

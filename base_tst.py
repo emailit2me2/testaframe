@@ -162,6 +162,9 @@ class TestCaseBase(object):
   def try_is_in(self, a, b, msg='', only_if=True):
     self.try_is(a, lambda a,b: a in b, 'in', b, msg, only_if)
 
+  def try_is_not_in(self, a, b, msg='', only_if=True):
+    self.try_is(a, lambda a,b: a not in b, 'not in', b, msg, only_if)
+
   def warn_is_equal(self, a, b, msg='', only_if=True):
     try:
       self.try_is(a, lambda a,b: a==b, '==', b, msg, only_if)
