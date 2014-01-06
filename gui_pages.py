@@ -65,6 +65,17 @@ class AjaxyPage(StdPage):
     if password:
       self.type_into(self.password_field, password)
 
+class AlertsPage(StdPage):
+  HOST_ENUM = our_envs.SE_HOST_ENUM
+  PAGE = "/alerts.html"
+  def _prep_finders(self):
+    StdPage._prep_finders(self)
+    self.verify_element = self.alert_link = self.by_css('#alert')
+  def do_alert(self):
+    self.click_on(self.alert_link)
+    alert_dialog = self.get_alert()
+    alert_dialog.choose_accept()
+
 
 # example page object for a wikipedia.org article
 class ArticlePage(StdPage):

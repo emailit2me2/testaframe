@@ -18,6 +18,7 @@ class MyTestBase(GuiTestCaseBase):
 
   def setUp(self):
     self.env_prep_for_se()
+    GuiTestCaseBase.setUp(self)
 
   def tearDown(self):
     self.env_teardown()
@@ -50,6 +51,7 @@ class TestMyGui(MyTestBase):
     self.start.set_highlight_delay(1)
     self.try_is_equal(new_label1, ajaxy_page.new_labels.the_text)
     self.start.set_highlight_delay()  # set delay back to default.
+    # set_poll_max() and set_poll_delay() use this same idiom.
 
     new_label2 = self.data.uniq_comment()['stripped_comment']
     ajaxy_page.fillout_form(new_label2)
@@ -68,6 +70,11 @@ class TestMyGui(MyTestBase):
     # The first try_is_equal calls .the_text and fails initially because there are
     # no .label elements in the DOM yet.  The second try_is_equal fails initially because
     # the expected and actual values are not yet equal.
+
+  @attr("Example","Alerts")
+  def test_alerts(self):
+    alerts_page = self.start.at(AlertsPage)
+    alerts_page.do_alert()
 
   @attr('Example')
   def test_wikipedia(self):
