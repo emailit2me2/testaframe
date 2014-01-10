@@ -1,4 +1,4 @@
-
+#!/usr/bin/env nosetests
 assert __name__ != '__main__', "Must be run with nosetests"
 
 import runner
