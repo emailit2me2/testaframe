@@ -279,7 +279,7 @@ class BaseForm(object):
         e.clear()
     e.send_keys(text)
     if not element_spec.log_type_into:  # Don't log passwords and such
-      text = "**supressed**"
+      text = "**suppressed**"
     print "type into %s = %r" % (element_spec, text)
   def clear_field(self, element_spec):
     e = self.find_the(element_spec)

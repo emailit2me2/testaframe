@@ -367,10 +367,10 @@ class BaseSeEnvMixin(object):
         # TODO make an option for named screenshot and/or latest
         snap = os.path.join(snapshot_dir,"snap_%s.png" % self.find_tst_name())
         print "saving screenshot as: %s" % snap
-        self.driver.get_screenshot_as_file(snap)
+        if not self.driver.get_screenshot_as_file(snap): print "FAILED to write snap"
         snap = os.path.join(snapshot_dir,"snap_%s.png" % 'last_test')
         print "saving screenshot as: %s" % snap
-        self.driver.get_screenshot_as_file(snap)
+        if not self.driver.get_screenshot_as_file(snap): print "FAILED to write snap"
       if errors or my_cfg.config.get('SAVE_SOURCE', False):
         source = os.path.join(snapshot_dir,"source_%s.html" % self.find_tst_name())
         print "saving source as: %s" % source
