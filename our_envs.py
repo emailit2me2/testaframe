@@ -9,8 +9,8 @@ QA_ENV = 'QA'
 STAGING_ENV = 'Staging'
 PROD_ENV = 'Prod'
 
-WIKI_HOST_ENUM = 'GUI_Host'
-SE_HOST_ENUM = 'SE_Host'
+WIKI_HOST_ENUM = 'Wiki_Host'
+SAMPLE_HOST_ENUM = 'Sample_Host'
 API_HOST_ENUM = 'API_Host'
 
 DB_SVC_HOST_ENUM = API_HOST_ENUM
@@ -30,7 +30,7 @@ envs = {
       # For real world use you will probably want to use the two lines below.
       #WIKI_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALHOST'], URL_TMPL_ENUM: 'http://%s'},
       #API_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALHOST'], URL_TMPL_ENUM: 'http://%s'},
-      SE_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALHOST'], URL_TMPL_ENUM: 'http://%s:8000'},
+      SAMPLE_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALHOST'], URL_TMPL_ENUM: 'http://%s:8000'},
     }
     # Facebook/cookie secret stuff could go here too.
     #COOKIE_SECRET = ''
@@ -44,7 +44,7 @@ envs = {
       WIKI_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALVM'], URL_TMPL_ENUM: 'http://%s'},
       API_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALVM'], URL_TMPL_ENUM: 'http://%s'},
       # you could also pull port numbers from my_cfg to create the URL_TMPL
-      SE_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALVM'], URL_TMPL_ENUM: 'http://%s:8000'},
+      SAMPLE_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALVM'], URL_TMPL_ENUM: 'http://%s:8000'},
     }
   },
   # Some environments may not have all host types.

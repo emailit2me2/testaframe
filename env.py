@@ -17,7 +17,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import selenium.common.exceptions
 
 import base_page
-import gui_pages  # Wish this didn't have to be in here polluting
+import wiki_pages  # Wish this didn't have to be in here polluting
+import sample_pages  # Wish this didn't have to be in here polluting
 import databuilder
 import service
 
@@ -26,7 +27,7 @@ import service
     But it will silently use the generic class, even if you were expecting it to
     use the platform specific one.  So best to list all gui classes here.
 '''
-ALL_GUI_MODULES = [gui_pages,]
+ALL_GUI_MODULES = [wiki_pages,sample_pages]
 
 try:
   import my_cfg

@@ -1,44 +1,31 @@
 
 # -*- coding: utf-8 -*-
 
-import traceback
-
 from nose.plugins.attrib import attr
 from nose.plugins.skip import SkipTest
 
-from gui_pages import *
+from sample_pages import *
 
-from base_tst import *
+from std_tst import *
 
 from databuilder import *
 
-@attr('MyProject','Gui')
-class MyTestBase(GuiTestCaseBase):
-  TRIES = 10
+@attr('Sample')
+class SampleTestBase(StdGuiTestBase):
 
   def setUp(self):
-    self.env_prep_for_se()
-    GuiTestCaseBase.setUp(self)
-
+    StdGuiTestBase.setUp(self)
   def tearDown(self):
-    self.env_teardown()
-
-  def execute_js_on(self, page):
-    # for use with bookmarklets
-    print "Executing my js for %s" % self.env_sut_host()
-    page.execute_javascript(self.env_get_my_js())
+    StdGuiTestBase.tearDown(self)
 
 
-class TestMyGui(MyTestBase):
+class TestSeGui(SampleTestBase):
   # These tests use the test pages from the selenium repo
   # Clone the selenium repo locally
   # cd to selenium/common/src/web
   # then start a simple http server using
   #   python -m SimpleHTTPServer 8000
   # then run these tests.  Add the -s option to see the logs.
-
-  def _skip_func(self, param):
-    self.skip_tst(param)
 
   @attr("Example","Ajax")
   def test_ajaxy(self):
@@ -75,9 +62,3 @@ class TestMyGui(MyTestBase):
   def test_alerts(self):
     alerts_page = self.start.at(AlertsPage)
     alerts_page.do_alert()
-
-  @attr('Example')
-  def test_wikipedia(self):
-    article_to_use = 'YAML'
-    article_page = self.start.at(ArticlePage, substitutions=(article_to_use))
-    self.is_in(article_to_use, article_page.get_title)

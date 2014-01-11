@@ -4,14 +4,11 @@ import logging
 l = logging.getLogger('selenium.webdriver.remote.remote_connection')
 l.setLevel(logging.INFO)
 
-import imaplib
-import email.parser
 import traceback
 import sys
-import gc
-import pprint
 
-from nose.tools import eq_, ok_
+from nose.tools import  ok_
+from nose.plugins.attrib import attr
 from nose.plugins.skip import SkipTest
 
 from selenium.common.exceptions import WebDriverException,StaleElementReferenceException
@@ -44,6 +41,8 @@ class TestCaseBase(object):
     self.set_poll_max(self.default_poll_max)
     self.default_poll_delay = self._POLLING_DELAY
     self.set_poll_delay(self.default_poll_delay)
+  def tearDown(self):
+    pass
   def set_poll_max(self, poll_max=-1, message=''):
     if poll_max < 0:
       self.poll_max = self.default_poll_max
@@ -218,6 +217,14 @@ class TestCaseBase(object):
     assert False, "Could not determine test name"
 
 
+@attr('Gui')
 class GuiTestCaseBase(TestCaseBase):
   def setUp(self):
     TestCaseBase.setUp(self)
+  def tearDown(self):
+    self.env_teardown()
+    TestCaseBase.tearDown(self)
+  def execute_js_on(self, page):
+    # for use with bookmarklets
+    print "Executing my js for %s" % self.env_sut_host()
+    page.execute_javascript(self.env_get_my_js())

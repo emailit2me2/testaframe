@@ -4,10 +4,11 @@ assert __name__ != '__main__', "Must be run with nosetests"
 import runner
 import env
 
-import gui_test
+import wiki_test
+import sample_test
 import api_test
 # TODO remove DRY ^v somehow
-gui_tests = [gui_test,]
+gui_tests = [wiki_test,sample_test]
 api_tests = [api_test,]
 
 environments = [
