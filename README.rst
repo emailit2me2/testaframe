@@ -8,6 +8,12 @@ Testaframe - Test Automation Framework
 Framework documentation
 =======================
 
+This README can be converted to html using the ``rst2html.py`` utility in docutils::
+
+ sudo pip install docutils
+ rst2html.py README.rst README.html
+
+
 System configuration
 --------------------
 Testaframe can be used for driving Selenium tests and/or API/service tests.
