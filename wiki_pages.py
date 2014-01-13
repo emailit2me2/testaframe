@@ -22,9 +22,28 @@ class ArticlePage(StdPage):
   # If no PAGE_RE exists PAGE will be converted into one.
   PAGE_RE = "^/wiki/.*$"
   PAGE_SUB = "/wiki/%s"  # A PAGE_SUB creates a PAGE using python's % operator
+  MOBILE_VIEW_LINK_TEXT = 'Mobile view'
   def _prep_finders(self):
     StdPage._prep_finders(self)
     self.verify_element = self.by_css('.mediawiki')
+    # See docs for: Add a new page class
+    self.verify_element = self.by_css('.collapsible-nav')
+
+    # See docs for: Add a locator to a page
+    self.powered_by_link = self.by_css('#footer-poweredbyico a')
+    self.mobile_view_link = self.by_link_text(self.MOBILE_VIEW_LINK_TEXT)
+    self.search_input = self.by_css('#searchInput')
+    self.search_form = self.by_css('#searchform')
+  # See docs for: add a function to a page
+  def do_search(self, search_term):
+    self.type_into(self.search_input, search_term)
+    self.submit_form(self.search_form)
+    return self.now_on(ArticlePage)
+  # See docs for: Add a new page class
+  def goto_mobile_view(self):
+    self.click_on(self.mobile_view_link)
+    return self.now_on(MobileArticlePage)
+
 
 class ArticlePageFF(ArticlePage):
   '''This class is a trivial example of how to use platform specific classes.
@@ -35,3 +54,11 @@ class ArticlePageFF(ArticlePage):
      in the logs) but any other browser will just create the general ArticlePage above.
   '''
   pass
+
+
+# See docs for: Add a new page class
+class MobileArticlePage(ArticlePage):
+  def _prep_finders(self):
+    ArticlePage._prep_finders(self)
+    self.verify_element = self.by_css('.section_heading')
+  
