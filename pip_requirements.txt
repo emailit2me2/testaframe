@@ -1,5 +1,7 @@
 nose
 selenium
 requests
+# commented out packages are optional
+#docutils
 #beautifulsoup4
 #Werkzeug

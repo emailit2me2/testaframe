@@ -44,7 +44,7 @@ class TestSeGui(SampleTestBase):
     ajaxy_page.fillout_form(new_label2)
     ajaxy_page.submit_fillout_form()
     # you need to pass functions or lambdas to try_is_* if they need to be reevaluated
-    # For instance if you change the following line to end with
+    # For instance if you change the following line of code to end with
     #    .all_the_text())
     # then python will call all_the_text before it calls try_is_equal and the test
     # will fail because the value will not change when the new label appears in the DOM.

@@ -8,14 +8,16 @@ Testaframe - Test Automation Framework
 Framework documentation
 =======================
 
-This README can be converted to html using the ``rst2html.py`` utility in docutils::
+This README can be converted to html using the ``Makefile``
 
- sudo pip install docutils
- rst2html.py README.rst README.html
+.. code::
 
+ sudo pip install docutils  # if not already installed
+ make docs
 
-System configuration
---------------------
+Overview
+--------
+
 Testaframe can be used for driving Selenium tests and/or API/service tests.
 Two of its main features are the ability to run tests on multiple OS/browsers
 across multiple environments (e.g. localhost, CI, QA) at once,
@@ -26,21 +28,37 @@ There is still a bit of work and documentation to do before this is all pretty a
 easily used and learned by new people, but it is better to get it committed and public
 rather than wait until it is perfect.
 
-See ``*_test.py`` for examples of GUI and API tests.  Your tests
-should go in ``wiki|sample_test.py`` or api_test.py.  You can rename them or add more files,
-then modify the ``run_*.py`` files to use the new test files.
+System configuration
+--------------------
+You will need Python 2.7 installed.
 
-Required libraries
-  see ``pip_requirements.txt``
+Clone the `testall repo <https://github.com/seomoz/testall>`_ to your local box.
+
+Required libraries (optional packages are commented out) in ``pip_requirements.txt``
+Install them using
+
+.. code::
+
+ sudo pip install -r pip_requirements.txt
 
 You will need to create a personal ``my_cfg.py`` on your local machine by
-using ``my_cfg_example.py`` as an example.
+using ``my_cfg_example.py`` as an example.  Create one using
+
+.. code::
+
+ cp my_cfg_example.py my_cfg.py
+
 The ``my_cfg.py`` file should be .ignored in your source control.
 
 Running the tests
 ~~~~~~~~~~~~~~~~~
-The tests must be run inside nosetests using a specific ``run_*.py`` file.  For example 
-``nosetests run_local.py``
+The tests must be run inside nosetests using a specific ``run_*.py`` file.  For example
+
+.. code::
+
+ nosetests run_local.py -s -v -a Wiki
+
+will run all the Wikipedia tests in ``wiki_test.py``.
 
 Other useful nose options::
 
@@ -49,17 +67,54 @@ Other useful nose options::
   -m test_just_this_one  (-m has full regex matching)
   -a ThisAttribute
 
+The selenium source repository contains many html pages that are used by the Selenium
+self tests to test various features of Selenium itself.  We can use these pages to
+show more features of Testaframe.  Look in ``sample_test.py`` for the examples.
+
+To run the the "Sample" tests you will need to
+
+-  Clone the `selenium repo <https://code.google.com/p/selenium/>`_ locally
+-  Open a terminal and ``cd`` to ``selenium/common/src/web``
+-  Start a simple http server then run the tests
+
+.. code::
+
+ python -m SimpleHTTPServer 8000
+ nosetests run_local.py -s -v -a Sample
+
+The ``test_ajaxy`` method in ``sample_test.py`` documents, in detail, several of the key
+features, options, and gotchas when working with Testaframe, Selenium and especially
+pages containing Ajax.  You can run it using
+
+.. code::
+
+ nosetests run_local.py -s -v -m test_ajaxy
+
+
+Testaframe can also be used for API or service tests.  Examples are in ``api_test.py``
+Run them using
+
+.. code::
+
+ nosetests run_local.py -s -v -a Api
+
+
 Helpful trick
 ~~~~~~~~~~~~~
 While tests are running, the browser will be opening and closing and basically
 making your desktop machine unusable for anything else.  So start up a VNC server
-and a VNC viewer and then run the tests pointing to that display 
-``DISPLAY=localhost:7 nosetests run_local.py -v``
+and a VNC viewer and then run the tests pointing to that display
 
-The ``our_envs.py`` file will need to be customized for your project/company.
+.. code::
+
+ DISPLAY=localhost:7 nosetests run_local.py -v
 
 Files
 ~~~~~
+See ``*_test.py`` for examples of GUI and API tests.  Your tests
+should go in ``wiki|sample_test.py`` or ``api_test.py``.  You can rename them or add more files,
+then modify the ``run_*.py`` files to use the new test files.
+
 Test files should end in ``_test.py`` if they should be discovered, and ``*_tst.py``
 if they should not be discovered (e.g. ``base_tst.py``).
 
@@ -68,7 +123,9 @@ if they should not be discovered (e.g. ``base_tst.py``).
 Ideally ``base_tst.py`` would not have any selenium code in it, but it seems
 pretty tied into the polling asserts.
 
-In a perfect world this framework could be completely seperated from user's test code
+The ``our_envs.py`` file will need to be customized for your project/company.
+
+In a perfect world this framework could be completely seperated from user's test code.
 but we are not quite at that stage yet.
 
 Classes
@@ -79,7 +136,9 @@ Tests
 ~~~~~
 Test functions should begin with ``test_``
 Test functions should not have a doc string because the first line is used as
-the test description (a pyunit oddity).  However a comment can be used safely.::
+the test description (a pyunit oddity).  However a comment can be used safely.
+
+.. code::
 
  def test_name_problem(self):
    '''messes up the test description'''
@@ -114,13 +173,23 @@ generated classes that get discovered by nose.
 Only a default version of ``run_local.py`` should be checked in, since it is intended
 to be changed often as tests are developed and debugged.
 
-Test Data Builder Pattern
-Briefly described at http://c2.com/cgi/wiki?TestDataBuilder
-Which discussed by Steve Freeman at http://www.infoq.com/presentations/Sustainable-Test-Driven-Development
+Driving Browsers
+~~~~~~~~~~~~~~~~
+Firefox has Selenium support built in.  But Chrome and IE require an external driver.
+There is a list on the SeleniumHQ download page
 
+Databuilder - Test Data Builder Pattern
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Test Data Builder Pattern is described on `C2 <http://c2.com/cgi/wiki?TestDataBuilder>`_
+and also discussed by Steve Freeman in a `video <http://www.infoq.com/presentations/Sustainable-Test-Driven-Development>`_.
+
+Logging
+~~~~~~~
 Many of the features were designed to make the logging output much easier to read
 for less technical readers (e.g. managers, business people, manual testers).
 
+Beginning Ruby version
+~~~~~~~~~~~~~~~~~~~~~~
 There is the start to a Ruby implementation of Testaframe in the ``ruby/`` subdirectory.
 There are pros and cons to each implementation, but the multiprocess support in
 nosetests was a big factor in focusing on Python.
@@ -163,6 +232,124 @@ We could factor out the lines involving going to an article page and making sure
 title matches by making of another function in ``WikiTestGui`` called ``goto_wiki_article()``
 which would go to the page and verify the title.
 
+
+How to read the output of a successful test
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We will use log output of ``test_search_success`` as our example.
+
+With run_local.py using browser ``Local_FF``, run the test with logging turned on.
+
+.. code::
+
+  nosetests run_local.py -s -v -m test_search_success
+
+Which should result in roughly the following log output.
+
+.. code::
+
+  run_local.wiki_test_Local_FF_on_Localhost_TestWikiGui.test_search_success
+  Setting highlight delay to 0
+  Setting poll max to 10
+  Setting poll delay to 0.1
+  Making a platform specific page: ArticlePageFF
+  Created page object ArticlePageFF
+  Going to get 'http://wikipedia.org/wiki/YAML'
+  Current url u'http://en.wikipedia.org/wiki/YAML' /wiki/YAML
+  Verifying ArticlePageFF path pattern '^/wiki/.*$' matches u'/wiki/YAML'
+  find element 'verify_element' using css selector='.collapsible-nav'
+       !! waiting 1 second(s) because stupid wait due to stale element problems !!
+  find element 'powered_by_link' using css selector='#footer-poweredbyico a'
+      Is 'powered_by_link' using css selector='#footer-poweredbyico a' displayed?: True
+    True: True ?== True
+  PASS: True == True
+  find element 'search_input' using css selector='#searchInput'
+  type into 'search_input' using css selector='#searchInput' = 'XML'
+  find element 'search_form' using css selector='#searchform'
+  submit form
+  on page ArticlePage
+  Making a platform specific page: ArticlePageFF
+  Created page object ArticlePageFF
+  Current url u'http://en.wikipedia.org/wiki/XML' /wiki/XML
+  Verifying ArticlePageFF path pattern '^/wiki/.*$' matches u'/wiki/XML'
+  find element 'verify_element' using css selector='.collapsible-nav'
+       !! waiting 1 second(s) because stupid wait due to stale element problems !!
+  Now on ArticlePage with window_name main
+  Current title u'XML - Wikipedia, the free encyclopedia'
+    True: 'XML' ?in u'XML - Wikipedia, the free encyclopedia'
+  PASS: 'XML' in u'XML - Wikipedia, the free encyclopedia'
+  ok
+
+  ----------------------------------------------------------------------
+  Ran 1 test in 11.054s
+
+  OK
+
+The first thing shown is the test title which has the runner name, in this case ``run_local``,
+the test file (i.e. ``wiki_test.py``), the OS/browser chosen, in this case ``Local_FF``
+(i.e. Firefox running on the local box), on what environment (``Localhost``),
+the test class name (i.e. ``TestWikiGui``) and finally the test method name itself
+(i.e. ``test_search_success``).
+
+The environment of ``Localhost`` is a little strange here, because we are actually
+hitting ``wikipedia.org``.  But the example tests need to be able to run with limited
+setup by new users.  If you look in ``our_envs.py``, in the ``LOCALHOST_ENV`` section,
+you will see a comment that this is set up with some real live sites for demo purposes.
+
+The next thing is setting default values for highlight delay, polling max, and polling delay
+
+This was all been preparatory work before we got to the first real line of the test
+which is ``start.at`` the ``ArticlePage``.
+
+It creates a platform specific page, ``ArticlePageFF``, showing the platform suffix feature,
+then it tells you that it created the page object, ``ArticlePageFF``.
+If you used ``Local_Chrome`` or any of the other browsers it would just say
+created page object ``ArticlePage`` (see also page object platform suffix elsewhere).
+
+The page object is created, now we go get the web page with Selenium.
+Go get the actual web page.
+The current URL ``wikipedia.org/wiki/YAML``, and the second value there is the just the path
+``/wiki/YAML``.
+Then ``verify_on_page`` does its work.
+It sees the current URL, verifying that the path pattern, in this case ``/wiki/<anything>``, matches
+then it attempts to locate the ``verify_element``, in this case using the css selector ``.collapsible-nav``.
+There are sometimes problems with stale page elements during page transitions
+so there is currently a brief delay to account for that.
+
+Then we begin the real portion of the test.
+In this case we are checking to see if the ``powered_by_link`` is displayed.
+Yes it is.
+so the text frame find the element ``powered_by_link`` using that CSS selector
+then it's settled
+then it tells you it's doing a check if powered_by_link using CSS selector, is displayed,
+it tells you the value of that (i.e. True)
+then the following line shows you that it is true that True is equal to True.
+That is a little confusing, there is another example at the end of that test which is more clear.
+
+Then it tells you the assert passed.
+Many of the assert frameworks will only show you if things fail, but Testaframe
+was designed to have better logging to show you precisely what it is checking and what the results are.
+This creates better trust among non-coders as well as really easy to read repro steps.
+
+Next we want to perform the do_search
+We go find the ``search_input`` element and type into the element the value ``"XML"``.
+Then we find the ``search_form`` element and submit the form.
+
+The new page should be another ``ArticlePage`` (again it makes a platform specific page).
+The page object is created and the current URL is now ``/wiki/XML``.
+Verify that, yes, that's still a match and the ``verify_element`` is correct.
+
+Now we're on the ``ArticlePage`` with ``window_name`` of ``main``.
+There is functionality for handling pages (pages opening in other tabs and windows).
+See also multiple windows/tab handling.
+
+Then we verify that the ``search_term`` is in the title, so we get the current title
+which is ``"XML - Wikipedia..."`` we check if ``"XML" ?in "XML Wikipedia..."``.
+And we see the successful result of the assert.
+
+The ``"ok"`` is from the test framework saying that the test passed.
+
+Then it displays the number of tests that ran and how long they took.
 
 
 Add a locator to a page object
