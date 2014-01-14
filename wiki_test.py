@@ -5,17 +5,16 @@ from nose.plugins.attrib import attr
 
 from wiki_pages import *
 
-from base_tst import *
+from std_tst import *
 
 from databuilder import *
 
 @attr('Wiki')
-class WikiTestBase(GuiTestCaseBase):
+class WikiTestBase(StdGuiTestBase):
   def setUp(self):
-    self.env_prep_for_se()
-    GuiTestCaseBase.setUp(self)
+    StdGuiTestBase.setUp(self)
   def tearDown(self):
-    self.env_teardown()
+    StdGuiTestBase.tearDown(self)
 
   def execute_js_on(self, page):
     # for use with bookmarklets

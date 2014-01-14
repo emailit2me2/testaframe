@@ -17,6 +17,7 @@ class StdGuiTestBase(GuiTestCaseBase):
     self.env_prep_for_se()
     GuiTestCaseBase.setUp(self)
   def tearDown(self):
+    self.env_teardown()
     GuiTestCaseBase.tearDown(self)
 
 

@@ -222,7 +222,6 @@ class GuiTestCaseBase(TestCaseBase):
   def setUp(self):
     TestCaseBase.setUp(self)
   def tearDown(self):
-    self.env_teardown()
     TestCaseBase.tearDown(self)
   def execute_js_on(self, page):
     # for use with bookmarklets
