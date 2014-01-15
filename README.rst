@@ -73,9 +73,9 @@ show more features of Testaframe.  Look in ``sample_test.py`` for the examples.
 
 To run the the "Sample" tests you will need to
 
--  Clone the `selenium repo <https://code.google.com/p/selenium/>`_ locally
--  Open a terminal and ``cd`` to ``selenium/common/src/web``
--  Start a simple http server then run the tests
+#.  Clone the `selenium repo <https://code.google.com/p/selenium/>`_ locally
+#.  Open a terminal and ``cd`` to ``selenium/common/src/web``
+#.  Start a simple http server then run the tests
 
 .. code::
 
@@ -206,23 +206,23 @@ Add another test case to an existing test class
 For this example we will add a test for a Wikipedia article with parentheses in the name.
 We will use `Python_(programming_language)` as an example.
 
--  Go to ``wiki_test.py`` file
--  Find ``test_wikipedia()``
--  Copy the test, everything from the attribute descriptor [``@attr``]
-   through the ``self.is_in()`` at the end of the test
--  Paste that below ``test_wikipedia()``
--  Change its name to ``test_article_with_parens``
--  Change ``article_to_use`` to ``Python_(programming_language)``
--  Save the test file
--  Run the test using ``run_local.py -s -v -m test_article_with_parens`` (the ``-s -v``
-   are very useful during test development and debugging)
--  This fails because the title has slightly different punctuation than the normal article
-   and we will have to account for that
--  For now let's just use the ``replace()`` method on ``article_to_use`` to change the ``_`` to a space
--  Enter ``article_title = article_to_use.replace('_',' ')``
--  Change the assert to use article title ``self.is_in(article_title, ...)``
--  Rerun the test
--  The test passed
+#.  Go to ``wiki_test.py`` file
+#.  Find ``test_wikipedia()``
+#.  Copy the test, everything from the attribute descriptor [``@attr``]
+    through the ``self.is_in()`` at the end of the test
+#.  Paste that below ``test_wikipedia()``
+#.  Change its name to ``test_article_with_parens``
+#.  Change ``article_to_use`` to ``Python_(programming_language)``
+#.  Save the test file
+#.  Run the test using ``run_local.py -s -v -m test_article_with_parens`` (the ``-s -v``
+    are very useful during test development and debugging)
+#.  This fails because the title has slightly different punctuation than the normal article
+    and we will have to account for that
+#.  For now let's just use the ``replace()`` method on ``article_to_use`` to change the ``_`` to a space
+#.  Enter ``article_title = article_to_use.replace('_',' ')``
+#.  Change the assert to use article title ``self.is_in(article_title, ...)``
+#.  Rerun the test
+#.  The test passed
 
 We will leave the example this way, but the article and title manipulation should
 be done in the Databuilder, which we will show later.
@@ -356,31 +356,31 @@ Add a locator to a page object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Now we're going to add a locator to a page and then verify the element is on the page.
 
--  First go look at the `Wikipedia YAML <http://en.wikipedia.org/wiki/YAML>`_ page
--  Look at the footer, clear at the bottom of the page
+#.  First go look at the `Wikipedia YAML <http://en.wikipedia.org/wiki/YAML>`_ page
+#.  Look at the footer, clear at the bottom of the page
 
-Let's imagine we need to verify that an article page has the "Powered by MediaWiki" logo displayed.
-We need to find something in the HTML that will help us verify and locate that item
+    Let's imagine we need to verify that an article page has the "Powered by MediaWiki" logo displayed.
+    We need to find something in the HTML that will help us verify and locate that item
 
--  In your browser do inspect element (right click, inspect element in Chrome and Firefox)
--  Notice that the anchor tag doen't have an ID, but the parent is ``<li id="footer-poweredbyico">``
--  We will use this as the basis of our locator
--  The locator will start with ``#footer-poweredbyico``. The ``#`` indicates its an ID see also: CSS locators
--  We don't want the list item, since it isn't clickable (which we will likely want to do some day),
-   we want the actual anchor tag so add "`` a``" and it will find you the actual anchor
--  Go to the ``ArticlePage`` in ``wiki_pages.py`` and see ``_prep_finders()``
--  Make a new locator ``self.powered_by_link = self.by_css(#footer-poweredbyico a')``
--  Check if the locator if found on the page
+#.  In your browser do inspect element (right click, inspect element in Chrome and Firefox)
+#.  Notice that the anchor tag doen't have an ID, but the parent is ``<li id="footer-poweredbyico">``
+#.  We will use this as the basis of our locator
+#.  The locator will start with ``#footer-poweredbyico``. The ``#`` indicates its an ID see also: CSS locators
+#.  We don't want the list item, since it isn't clickable (which we will likely want to do some day),
+    we want the actual anchor tag so add "`` a``" and it will find you the actual anchor
+#.  Go to the ``ArticlePage`` in ``wiki_pages.py`` and see ``_prep_finders()``
+#.  Make a new locator ``self.powered_by_link = self.by_css(#footer-poweredbyico a')``
+#.  Check if the locator if found on the page
 
--  Go to '`wiki_test.py`` and add to ``test_wikipedia()``
--  Add ``self.is_equal(True, article_page.powered_by.is_this_displayed)``
--  For this is example we will just see if it is `True`, if it's True then it is displayed
--  Notice there is no ``()`` after ``is_this_displayed``, this is explained, with examples,
-   in ``sample_test.py`` in ``test_ajaxy``.  Since we are using ``is_equal`` here, it doesn't effect
-   the test, but is good to get in the habit of passing functions to Testaframe's asserts.
--  For that matter, we probably should be using the polling assert version, ``try_is_in`` since
-   there is no cost to doing so and it often is necessary based on how pages actually render.
--  Run the test
+#.  Go to '`wiki_test.py`` and add to ``test_wikipedia()``
+#.  Add ``self.is_equal(True, article_page.powered_by.is_this_displayed)``
+#.  For this is example we will just see if it is `True`, if it's True then it is displayed
+#.  Notice there is no ``()`` after ``is_this_displayed``, this is explained, with examples,
+    in ``sample_test.py`` in ``test_ajaxy``.  Since we are using ``is_equal`` here, it doesn't effect
+    the test, but is good to get in the habit of passing functions to Testaframe's asserts.
+#.  For that matter, we probably should be using the polling assert version, ``try_is_in`` since
+    there is no cost to doing so and it often is necessary based on how pages actually render.
+#.  Run the test
 
 
 
@@ -391,41 +391,41 @@ First let's write what we need for the test we want the test to read
 article_page.do_search, with the parameter being the search term,
 and this should return another article page object.
 
--  Go to ``test_wikipedia.py`` and create a new test method based on ``test_wikipedia()``
--  Add the search part ``new_article_page = self.article_page.do_search(search_term)``
--  Add the verification part ``self.is_in(search_term, new_article_page.get_title)``
+#.  Go to ``test_wikipedia.py`` and create a new test method based on ``test_wikipedia()``
+#.  Add the search part ``new_article_page = self.article_page.do_search(search_term)``
+#.  Add the verification part ``self.is_in(search_term, new_article_page.get_title)``
 
-The naming convention is ``do_*()`` (e.g. ``do_login()``) which means perform an action
-which will result in you being taken to a new page, like searching behaves here.
-The other convention is to use ``goto_*()`` (e.g. ``goto_edit_page()``)  were
-the point is to trust that a simple click on a link or a button on the current page
-will take you somewhere new.
+    The naming convention is ``do_*()`` (e.g. ``do_login()``) which means perform an action
+    which will result in you being taken to a new page, like searching behaves here.
+    The other convention is to use ``goto_*()`` (e.g. ``goto_edit_page()``)  were
+    the point is to trust that a simple click on a link or a button on the current page
+    will take you somewhere new.
 
-We see how we want the test to look so let's add the ``do_search`` function on the article page
-This will take one parameter which is the search term
-Now we need to know the locator so we can type the search term into the search box
+    We see how we want the test to look so let's add the ``do_search`` function on the article page
+    This will take one parameter which is the search term
+    Now we need to know the locator so we can type the search term into the search box
 
--  In your browser go to an article page and choose inspect element on the search box
--  In this case the ID for that is ``searchInput`` so we will create a new locator
-   using ``#searchInput``
--  Next we type something into the search using ``self.type_into(self.search_input, search_term)``
+#.  In your browser go to an article page and choose inspect element on the search box
+#.  In this case the ID for that is ``searchInput`` so we will create a new locator
+    using ``#searchInput``
+#.  Next we type something into the search using ``self.type_into(self.search_input, search_term)``
 
-Then we need to submit the form. The ``input`` tag is a child of ``#searchform``
+    Then we need to submit the form. The ``input`` tag is a child of ``#searchform``
 
--   We need a new locator ``self.search_form = self.by_css('#searchform')``
--  Add to ``do_search`` so it submits the form
+#.  We need a new locator ``self.search_form = self.by_css('#searchform')``
+#.  Add to ``do_search`` so it submits the form
 
-When the form has been submitted we will wind up on a different article page.
+    When the form has been submitted we will wind up on a different article page.
 
--  So we must do ``return self.now_on(ArticlePage)``.
+#.  So we must do ``return self.now_on(ArticlePage)``.
 
-Even though we're on an article page and going to another article page, we still must
-return a new ``ArticlePage`` object because of the way Selenium works.
-It pulls the rug out from under your page objects (due to the asynchronous nature
-of how Selenium interacts with the browser, it is really like an Observer pattern).
-So in order to avoid that we don't want to accidentally use an old page so when
-you go to a new page Testaframe obsoletes the previous page, thus protecting you
-from possible errors on the test side.
+    Even though we're on an article page and going to another article page, we still must
+    return a new ``ArticlePage`` object because of the way Selenium works.
+    It pulls the rug out from under your page objects (due to the asynchronous nature
+    of how Selenium interacts with the browser, it is really like an Observer pattern).
+    So in order to avoid that we don't want to accidentally use an old page so when
+    you go to a new page Testaframe obsoletes the previous page, thus protecting you
+    from possible errors on the test side.
 
 Now let's go back to the test and make sure  the search term is in the page
 to verify that we successfully went to the search term's page.
@@ -468,11 +468,11 @@ They should generally be class variables of the page class, sometimes as Constan
 as is the case here, and other times as templates (e.g. ``"Welcome, %(username}s"``).
 These link text variables, expecially templates, are often used in the tests.
 
--  Create a link text variable
--  Create the locator using by_link_text
--  Add the ``click_on`` for the ``mobile_view_link`` to ``goto_mobile_view()``
--  After we have clicked on this we will be on new page so we must tell Testaframe
-   we are on a new page using ``self.now_on`` and the mobile page class
+#.  Create a link text variable
+#.  Create the locator using by_link_text
+#.  Add the ``click_on`` for the ``mobile_view_link`` to ``goto_mobile_view()``
+#.  After we have clicked on this we will be on new page so we must tell Testaframe
+    we are on a new page using ``self.now_on`` and the mobile page class
 
 In this case we can reuse some of the items from ``ArticlePage`` (e.g. ``PAGE_RE``,
 ``PAGE_SUB``) and likely more in a real world page class.
