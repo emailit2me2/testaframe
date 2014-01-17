@@ -77,7 +77,7 @@ class TestCaseBase(object):
 
   # See docs for: How to read log output containing polling
   def try_is(self, ag, op, sym, bg, msg, only_if):
-    '''The try_is_* asserts are polling due to ajax.  See L{polling asserts} in the docs.
+    '''The try_is_* asserts are polling due to ajax.  See polling asserts in the docs.
        ag and bg can be values, function, iterators, or generators and they will be
        evaluated correctly no matter what type comes in.'''
     if not only_if:
