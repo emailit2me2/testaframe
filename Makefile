@@ -5,7 +5,7 @@ PYDOCS_DIR=pydocs
 
 default: docs
 
-docs: README.html
+docs: README.html epydocs
 	rst2html.py README.rst $(README_HTML)
 
 README.html: README.rst
