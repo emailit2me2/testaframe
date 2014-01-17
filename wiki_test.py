@@ -30,6 +30,12 @@ class TestWikiGui(WikiTestBase):
     self.is_in(article_to_use, article_page.get_title)
     # See docs for: Add a locator to a page
     self.is_equal(True, article_page.powered_by_link.is_this_displayed)
+    # See docs for: How to read log output containing failures
+    # Uncomment one or the other of the lines of code below to force the demo errors
+    # force an assert failure
+    #self.is_in(article_to_use+'-FORCE FAILURE FOR DEMO PURPOSES', article_page.get_title)
+    # force a coding error
+    #self.is_in(article_to_use, article_page.FAIL_CUZ_THIS_FUNCTION_DOES_NOT_EXIST)
 
 
   # See docs for: Add another test case to an existing test class

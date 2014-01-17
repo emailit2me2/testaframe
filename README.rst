@@ -446,6 +446,85 @@ The ``test_ajaxy`` method exercises this page by
    for the assert on the values to pass.
 
 
+How to read log output containing failures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We can force a test failure by uncommenting the following line in ``test_wikipedia``.
+
+.. code::
+
+  self.is_in(article_to_use+'-FORCE FAILURE FOR DEMO PURPOSES', article_page.get_title)
+
+If you run ``test_wikipedia`` with that line enabled and the ``-s`` option
+you should see roughly the following log output.  Without the ``-s`` option the
+traceback portion will display first, followed by the log output.
+
+.. code::
+
+  run_local.wiki_test_Local_FF_on_Localhost_TestWikiGui.test_wikipedia
+  Setting highlight delay to 0
+  Setting poll max to 10
+  Setting poll delay to 0.1
+  Making a platform specific page: ArticlePageFF
+  Created page object ArticlePageFF
+  Going to get 'http://wikipedia.org/wiki/YAML'
+  Current url u'http://en.wikipedia.org/wiki/YAML' /wiki/YAML
+  Verifying ArticlePageFF path pattern '^/wiki/.*$' matches u'/wiki/YAML'
+  find element 'verify_element' using css selector='.collapsible-nav'
+       !! waiting 1 second(s) because stupid wait due to stale element problems !!
+  Current title u'YAML - Wikipedia, the free encyclopedia'
+    True: 'YAML' ?in u'YAML - Wikipedia, the free encyclopedia'
+  PASS: 'YAML' in u'YAML - Wikipedia, the free encyclopedia'
+  Current title u'YAML - Wikipedia, the free encyclopedia'
+    False: 'YAML-FORCE FAILURE FOR DEMO PURPOSES' ?in u'YAML - Wikipedia, the free encyclopedia'
+  FAIL
+
+  ======================================================================
+  FAIL: run_local.wiki_test_Local_FF_on_Localhost_TestWikiGui.test_wikipedia
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/usr/local/lib/python2.7/dist-packages/nose/nose/case.py", line 197, in runTest
+      self.test(*self.arg)
+    File "/home/markg/real/Testaframe/wiki_test.py", line 32, in test_wikipedia
+      self.is_in(article_to_use+'-FORCE FAILURE FOR DEMO PURPOSES', article_page.get_title)
+    File "/home/markg/real/Testaframe/base_tst.py", line 161, in is_in
+      self.is_op(a, lambda a,b: a in b, 'in', b, msg, only_if)
+    File "/home/markg/real/Testaframe/base_tst.py", line 72, in is_op
+      ret = ok_(op(a,b), "FAIL: %r not %s %r" % (a, sym, b))
+  AssertionError: FAIL: 'YAML-FORCE FAILURE FOR DEMO PURPOSES' not in u'YAML - Wikipedia, the free encyclopedia'
+
+  ----------------------------------------------------------------------
+  Ran 1 test in 7.229s
+
+  FAILED (failures=1)
+
+You can see the failing assert in the middle of the above log snippet,
+just above the ``FAIL`` at the bottom of the log output.
+
+Then it displays the failure, in this case an ``AssertError``. The assert message tells
+exactly what condition was not met.  In this case it is easy to see what the error is.
+But if the error were ``AssertionError: FAIL: 1 not == 2`` it isn't as obvious.
+By following the coding convention of always putting the expected value first in an
+assert, followed by the actual result, the output is much more understandable.
+
+Good variable naming in the test makes the traceback more readable. as well.  In the middle
+of the traceback, the assert line (i.e. ``self.try_is_in``) is displayed.
+
+.. code::
+
+  self.is_in(article_to_use+'-FORCE FAILURE FOR DEMO PURPOSES', article_page.get_title)
+
+Ignoring the ``FORCE FAILURE...`` portion, the above line, and thus the ``AssertionError`` message,
+are quite understandable (i.e. the article to use should have been in the page title)
+even with no other context.
+
+You can also see a coding error assert by enabling the following line in ``test_wikipedia``.
+
+.. code::
+
+  self.is_in(article_to_use, article_page.FAIL_CUZ_THIS_FUNCTION_DOES_NOT_EXIST)
+
+
 Add a locator to a page object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Now we're going to add a locator to a page and then verify the element is on the page.
