@@ -161,6 +161,20 @@ reason you can try the Spira standard of ``def test_func_name__<test id>()``.
 Putting attributes in the test function is less desirable because to get inside the
 test function the setup must be run which launches a browser.
 
+Asserts, polling and non-polling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testaframe provides polling asserts.  In fact, polling asserts and configuration injection
+are its two main features.  These methods begin with ``try_``
+(e.g. ``try_is_equal``, ``try_is_in``).  They are used in cases where the item(s)
+might not be in the DOM yet or where the value might change without a page reload.
+Imagine clicking the Follow button on a Twitter `profile <https://twitter.com/SeleniumHQ>`_ page.
+The # of followers should increment but the page won't reload.
+Also, sometimes the element doesn't exist in the DOM yet.  For instance you have
+to pick a Country in a menu (e.g. US, Canada) and then another menu will appear
+(e.g. States or Provinces respectively. So you have to wait for the second element to
+appear and then make sure it is correct.
+
+
 Runners
 ~~~~~~~
 The ``run_*.py`` files use the "execute the config" design pattern.  This is partly because
@@ -350,6 +364,86 @@ And we see the successful result of the assert.
 The ``"ok"`` is from the test framework saying that the test passed.
 
 Then it displays the number of tests that ran and how long they took.
+
+
+How to read log output containing polling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+How polling element finding and asserts look in the logs.  The ``test_ajaxy`` method
+makes extensive use of both.  Let's examine the log snippet below.  You can run
+the test yourself (after some prep work described in the ``test_ajaxy`` doc string)
+by running the following:
+
+.. code::
+
+  nosetests run_local.py -s -v -m test_ajaxy
+
+
+Which should result in roughly the following log output (with some non-essential lines removed).
+
+.. code::
+
+  ...
+  find element 'new_label_field' using name='typer'
+  type into 'new_label_field' using name='typer' = u'15a3e383'
+  find element 'new_label_form' using css selector='form'
+  submit form
+  Setting highlight delay to 1
+  find element 'new_labels' using css selector='.label'
+    Waiting for element:  1.02 secs
+    Waiting for element:  2.14 secs
+    Waiting for element:  3.26 secs
+    Waiting for element:  4.38 secs
+    True: u'883bedca' ?== u'883bedca'
+  PASS: u'883bedca' == u'883bedca'
+  Setting highlight delay to 0
+  find element 'new_label_field' using name='typer'
+  type into 'new_label_field' using name='typer' = u'304b0eb4'
+  find element 'new_label_form' using css selector='form'
+  submit form
+  find elements 'new_labels' using css selector='.label'
+    found 1 element(s)
+    False: [u'883bedca', u'304b0eb4'] ?== [u'883bedca']
+    Waiting for try_is(==):  0.02secs
+  find elements 'new_labels' using css selector='.label'
+    found 1 element(s)
+    False: [u'883bedca', u'304b0eb4'] ?== [u'883bedca']
+    Waiting for try_is(==):  0.15secs
+  find elements 'new_labels' using css selector='.label'
+    found 1 element(s)
+    False: [u'883bedca', u'304b0eb4'] ?== [u'883bedca']
+    Waiting for try_is(==):  0.26secs
+  ...
+  find elements 'new_labels' using css selector='.label'
+    found 1 element(s)
+    False: [u'883bedca', u'304b0eb4'] ?== [u'883bedca']
+    Waiting for try_is(==):  4.92secs
+  find elements 'new_labels' using css selector='.label'
+    found 2 element(s)
+    True: [u'883bedca', u'304b0eb4'] ?== [u'883bedca', u'304b0eb4']
+  PASS: [u'883bedca', u'304b0eb4'] == [u'883bedca', u'304b0eb4']
+           attribute 'class' for 'new_labels' using css selector='.label'
+  find elements 'new_labels' using css selector='.label'
+    found 2 element(s)
+    True: 'label' ?== u'label'
+  PASS: 'label' == u'label'
+  ...
+
+The sample page ``ajaxy_page.html`` has a form, where you type in a new "label" and submit
+the form.  Then some javascript code embedded in the page, waits 5 seconds and then places the
+previously entered label text into the DOM.
+
+The ``test_ajaxy`` method exercises this page by
+
+#. Entering a label and submitting the form
+#. Waiting to make sure the list of labels is equal to the entered label
+
+   a.  Although for the list of labels to be equal, the labels must first show up in the DOM (i.e. ``Waiting for element:...``)
+   #.  The ``find_all`` method has to wait for 5 seconds for the ``/label`` element to appear asserting the label text matches
+
+#. Entering a second label and submitting the form
+#. For this assert, there is already one ``.label`` element, so it only has to wait the 5 seconds
+   for the assert on the values to pass.
 
 
 Add a locator to a page object

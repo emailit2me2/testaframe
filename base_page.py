@@ -233,6 +233,19 @@ class BaseForm(object):
     raise exc  # TODO exc is not defined, but can't get the message to read pretty when fixed
 
   def should_not_find_the(self, element_spec):
+    '''
+    Searches the DOM for an element_spec and succeeds if it is not found.
+    This is often used for notification elements that show up for several seconds
+    and then automatically disapper.  The test code would look something like::
+
+    page.do_delete_user(user_name)
+    self.try_is_equal(page.USER_DELETED_TEXT, page.notification_element.the_text)
+    self.try_is_equal(True, lambda : page.should_not_find_the(page.notification_element))
+
+    This would wait for the element to be displayed, with the correct text,
+    and then wait for the element to timeout and disappear.
+
+    '''
     try:
       self.driver.find_element(element_spec.by, element_spec.spec)
       print "Element not expected to have been found: %s" % (element_spec)
@@ -242,11 +255,16 @@ class BaseForm(object):
       return True
 
   def should_not_find_any(self, element_spec):
+    '''
+    Searches the DOM for any instances of element_spec and succeeds if none are found.
+    See also: L{BaseForm.should_not_find_the<should_not_find_the>}
+    '''
     # find_elements returns [] on failure, it doesn't throw so reuse above
     self.should_not_find_the(element_spec)
 
 
   def click_on(self, element_spec, start_with=None):
+    '''Clicks on an element, after finding it using element_spec'''
     e = self.find_the(element_spec, start_with)
     print "click on %s" % (element_spec)
     e.click()
@@ -264,16 +282,19 @@ class BaseForm(object):
     print "click on %s[%d]" % (element_spec,index)
     e[index].click()
   def select_the(self, element_spec, start_with=None):
+    '''Selects a radio button or checkbox element, after finding it using element_spec'''
     e = self.find_the(element_spec, start_with)
     print "select the %s" % (element_spec)
     e.select()
   def select_from(self, element_spec, text, start_with=None):
+    '''Selects the menu option from element_spec, that displays text'''
     e = self.find_the(element_spec, start_with)
     print "select from %s choosing %r" % (element_spec,text)
     from selenium.webdriver.support.ui import Select
     select = Select(e)
     select.select_by_visible_text(text)
   def type_into(self, element_spec, text, clear_first=False, start_with=None):
+    '''Types text in element_spec, optionally after clearing the existing text'''
     e = self.find_the(element_spec, start_with=None)
     if clear_first:
         e.clear()
@@ -282,10 +303,12 @@ class BaseForm(object):
       text = "**suppressed**"
     print "type into %s = %r" % (element_spec, text)
   def clear_field(self, element_spec):
+    '''Clears any text in element_spec'''
     e = self.find_the(element_spec)
     print "clear field %s" % (element_spec)
     e.clear()
   def submit_form(self, element_spec):
+    '''Submits the form element_spec'''
     form = self.find_the(element_spec)
     print "submit form " % (element_spec)
     form.submit()
@@ -321,9 +344,11 @@ class BasePage(BaseForm):
     print "Refreshing page"
     self.driver.refresh()
   def go_back(self, page_class):
+    '''Performs a browser back'''
     self.driver.back()
     return self.now_on(page_class)
   def execute_javascript(self, javascript):
+    '''Execute the supplied javascript code inside the current browser window'''
     return self.driver.execute_script(javascript)
   def scroll_right(self):
     return self.driver.execute_script(
@@ -354,10 +379,15 @@ class BasePage(BaseForm):
     print "Current url %r" % url, path,obj.fragment
     return path
   def get_title(self):
+    '''Returns the title of the current browser window'''
     title = self.driver.title
     print "Current title %r" % title
     return title
   def verify_on_page(self):
+    '''
+    Verifies the URL matches the page's PAGE_RE and looks for the verify_element in the DOM.
+    TODO check the host as well.
+    '''
     start = time.time()
     while time.time() - start < (self.TIME_TO_WAIT/2):
       try:
@@ -394,6 +424,7 @@ class BasePage(BaseForm):
     self.driver.add_cookie({'name' : cookie, 'value' : value})
 
   def get_alert(self):
+    '''Wait for the, expected, current alert and return a new Alert object'''
     self.wait1.until(expected_conditions.alert_is_present())
     return AlertObj(self.driver)
 
