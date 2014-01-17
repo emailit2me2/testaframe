@@ -3,5 +3,6 @@ selenium
 requests
 # commented out packages are optional
 #docutils
+#epydoc
 #beautifulsoup4
 #Werkzeug

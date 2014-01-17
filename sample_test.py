@@ -27,6 +27,8 @@ class TestSeGui(SampleTestBase):
   #   python -m SimpleHTTPServer 8000
   # then run these tests.  Add the -s option to see the logs.
 
+  # See docs for: How to read log output containing polling
+  # See docs for: Asserts, polling and non-polling
   @attr("Example","Ajax")
   def test_ajaxy(self):
     ajaxy_page = self.start.at(AjaxyPage)
