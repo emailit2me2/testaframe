@@ -525,6 +525,23 @@ You can also see a coding error assert by enabling the following line in ``test_
   self.is_in(article_to_use, article_page.FAIL_CUZ_THIS_FUNCTION_DOES_NOT_EXIST)
 
 
+Info available to aid bug reporting and debugging
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are several things available for reporting and reproducing a bug:
+
+-  The logging output shows precisely what is happening in terms of actions performed by
+   Selenium, assert attempts, and any other information you choose to print out.
+   Datetimestamps could be helpful in some cases, but are currently not part of the
+   logging process.  However, they could be added quite quickly.
+-  Different environments and/or OS/Browser combinations to use as comparisons.
+-  Screenshots and HTML can be captured upon test completion.  You can also do captures mid-test
+   using ``env_save_snapshot``.
+-  Element highlighting, although mostly for test development, aids in understanding exactly
+   how the test is interacting with the SUT.
+-  Although external to Testaframe, ``vnc2swf`` can be used to capture full videos of test runs.
+
+
 Add a locator to a page object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Now we're going to add a locator to a page and then verify the element is on the page.
