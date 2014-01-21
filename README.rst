@@ -5,15 +5,6 @@ Testaframe - Test Automation Framework
 
 .. contents:: Table of Contents
 
-Framework documentation
-=======================
-
-This README can be converted to html using the ``Makefile``
-
-.. code::
-
- sudo pip install docutils  # if not already installed
- make docs
 
 Overview
 --------
@@ -28,8 +19,19 @@ There is still a bit of work and documentation to do before this is all pretty a
 easily used and learned by new people, but it is better to get it committed and public
 rather than wait until it is perfect.
 
+This README can be converted to html using the ``Makefile``
+
+.. code::
+
+ sudo pip install docutils  # if not already installed
+ make docs
+
+Getting started
+---------------
+
 System configuration
---------------------
+~~~~~~~~~~~~~~~~~~~~
+
 You will need Python 2.7 installed.
 
 Clone the `testall repo <https://github.com/seomoz/testall>`_ to your local box.
@@ -125,7 +127,7 @@ pretty tied into the polling asserts.
 
 The ``our_envs.py`` file will need to be customized for your project/company.
 
-In a perfect world this framework could be completely seperated from user's test code.
+In a perfect world this framework could be completely separated from user's test code.
 but we are not quite at that stage yet.
 
 Classes
@@ -190,12 +192,110 @@ to be changed often as tests are developed and debugged.
 Driving Browsers
 ~~~~~~~~~~~~~~~~
 Firefox has Selenium support built in.  But Chrome and IE require an external driver.
-There is a list on the SeleniumHQ download page
+There is a list on the `SeleniumHQ download`_ page
 
-Databuilder - Test Data Builder Pattern
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The Test Data Builder Pattern is described on `C2 <http://c2.com/cgi/wiki?TestDataBuilder>`_
-and also discussed by Steve Freeman in a `video <http://www.infoq.com/presentations/Sustainable-Test-Driven-Development>`_.
+Additional information
+----------------------
+
+Target readers
+~~~~~~~~~~~~~~
+
+The target users (or user functions) of the framework and target readers are:
+
+- Framework developer (feature work on the framework itself)
+- Sr SDET (adding major company specific stuff)
+- Test automator (creating, writing, and maintaining tests and pages)
+- Helpers (adding to tests and pages (e.g. support team, manual testers))
+- Domain expert (reads and audits the tests)
+
+Notice the programming skill goes down as you go down the list.
+The domain expertise likely goes up as you go down the list.
+
+
+
+What these docs are and are not
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Are
+
+  - An explanation and description of what features are included, how they are coded,
+    and how to use them.
+  - An explanation of how to create tests, pages, and framework features.
+
+- Are not
+
+  - Not a tutorial on testing or test automation
+  - Not a tutorial on Selenium or web technologies
+
+
+Knowledge assumed
+~~~~~~~~~~~~~~~~~
+
+- A working knowledge of Python is required.  However, the further down the list
+  of target users, the less Python is required.  Considerable effort was put into
+  the framework to make the tests as readable as possible for non-technical domain experts
+  including Product Manager and CxO's.  See also: the Page Object pattern discussion below.
+- A general understanding of HTML and CSS is needed for creating locators and
+  knowing how to exercise the functionality on a page.
+- A working knowledge of unit testing patterns is essential for SDET's and framework developers.
+  See `Testing resources`_ below
+  
+  The Pragmatic Programmers also have an excellent book titled "Pragmatic Unit Testing
+  in Java with JUnit".  Although it is currently out of print, many copies are available
+  via Amazon, etc.
+
+- OOP - Object Oriented Programming
+- DRY - Don't Repeat Yourself
+- Test automation
+- Domain knowledge
+
+Testing resources
+~~~~~~~~~~~~~~~~~
+
+- `Testing Heuristics Cheatsheet`_ (pdf)
+- `jUnit Summary Card`_ (pdf)
+- The `xUnit Patterns`_ site is an excellent resource.
+  `xUnit Patterns`_ is the seminal work in that area.  The author, Gerard Meszaros, published drafts
+  of the book as he was writing.  Those drafts are still available for viewing online,
+  and his excellent book is available for purchase there as well.
+
+I printed out the 2 PDF's, and they sit on the desk between my monitors.
+I refer to them many times a week.  I also write on mine as I find new things to test.
+For instance, we had a user who chose a user name of ``0123`` and Javascript interpreted that
+as not only a number but an octal number, so I hand wrote that on my sheet.
+
+.. _xUnit Patterns: http://xUnitPatterns.com
+.. _jUnit: http://pragprog.com/book/utj/pragmatic-unit-testing-in-java-with-junit
+.. _jUnit Summary Card: http://media.pragprog.com/titles/utj/StandaloneSummary.pdf
+.. _Testing Heuristics Cheatsheet: http://testobsessed.com/wp-content/uploads/2011/04/testheuristicscheatsheetv1.pdf
+
+
+Polling
+~~~~~~~
+
+Polling is the answer for how to get your tests to run quickly and reliably.
+When a test needs to wait for something to happen, people often use some kind
+of ``sleep`` or ``wait``.
+Adding ``sleeps`` to your tests makes them slower than necessary, because the sleep needs
+to be longer than the maximum time the event could take to complete.  But
+how long is that going to be.  In the case of ``test_ajaxy``, we know the page has
+Javascript that delays 5 seconds after submitting the form.  But if we put a ``5.0`` second
+delay in our test, we will have a race condition, because the Javascript delay isn't
+a guaranteed precise ``5.0`` seconds since it is just a web page, not an airplane
+control system.  So we would need to wait a little longer in the test, say ``5.1`` seconds.
+But if you run the tests 100 times, it will still probably fail at least once.  And if
+you had 100 tests, each failing 1% of the time, you have a really unreliable system.
+
+So the solution is to poll periodically.  In the case of GUI tests you need to wait for:
+
+- the element(s) to exist in the DOM
+- the assert to pass
+
+Other reasons to poll are waiting for:
+
+- an email to arrive in an inbox
+- an API to respond
+- a service to come up
+
 
 Logging
 ~~~~~~~
@@ -208,6 +308,9 @@ There is the start to a Ruby implementation of Testaframe in the ``ruby/`` subdi
 There are pros and cons to each implementation, but the multiprocess support in
 nosetests was a big factor in focusing on Python.
 
+.. _SeleniumHQ download: http://seleniumhq.org/download
+.. _C2: http://c2.com/cgi/wiki?TestDataBuilder
+.. _video: http://www.infoq.com/presentations/Sustainable-Test-Driven-Development
 
 Howtos
 ------
