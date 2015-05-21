@@ -29,7 +29,11 @@ namespace Testaframe.Utilities
         /// <param name="str">The format string.</param>
         /// <param name="args">The named args.</param>
         /// <example>
-        /// "{host}:{port}".Format(new Dictionary<string, string>() {{"host", "http://127.0.0.1"}, {"port", 80}}
+        /// "{host}:{port}".Format(new Dictionary<string, string>() 
+        ///                        {
+        ///                            {"host", "http://127.0.0.1"}, 
+        ///                            {"port", 80}
+        ///                        }
         /// 
         /// Returns: "http://127.0.0.1:80"
         /// </example>

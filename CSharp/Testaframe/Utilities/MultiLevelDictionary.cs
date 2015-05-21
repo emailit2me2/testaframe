@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace Testaframe.Utilities
 {
     //TODO: Expand this to not only work with JSON.
+    //TODO: Add Array support.
 
     /// <summary>
     /// Provides a dictionary representation of JSON. 

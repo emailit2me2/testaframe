@@ -12,6 +12,11 @@ namespace Testaframe.Config
     public enum SystemEnvironment
     {
         /// <summary>
+        /// Not set.
+        /// </summary>
+        None,
+
+        /// <summary>
         /// LocalHost Environment.
         /// </summary>
         Localhost,
