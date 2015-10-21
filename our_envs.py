@@ -25,7 +25,7 @@ envs = {
     ALLOWS_WRITES_ENUM: True,
     HOSTS_ENUM: {
       WIKI_HOST_ENUM: {HOST_SPEC_ENUM:'wikipedia.org', URL_TMPL_ENUM: 'http://%s'},
-      API_HOST_ENUM: {HOST_SPEC_ENUM:'freegeoip.net', URL_TMPL_ENUM: 'http://%s'},
+      API_HOST_ENUM: {HOST_SPEC_ENUM:'geoip.nekudo.com', URL_TMPL_ENUM: 'http://%s'},
       # The lines above are used to make the example tests run "out of the box".
       # For real world use you will probably want to use the two lines below.
       #WIKI_HOST_ENUM: {HOST_SPEC_ENUM:my_cfg.config['HOST']['LOCALHOST'], URL_TMPL_ENUM: 'http://%s'},

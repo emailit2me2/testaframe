@@ -315,6 +315,7 @@ nosetests was a big factor in focusing on Python.
 Howtos
 ------
 
+These Howtos are roughly in order of complexity, or likelyhood of need.
 The code is commented to try to connect these howto docs and the code.
 
 Add another test case to an existing test class

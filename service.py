@@ -40,9 +40,9 @@ class MyService(object):
     callers_name = inspect.stack()[1][3]  # get calling function's name
     service = "/".join(callers_name.split('_',1))
     print "Prepping URL on %s for %s"  % (self.base_url, service)
-    url = '%s/%s' % (self.base_url, service)
-    req = urllib2.Request(url, json.dumps(data))
-    print "Trying %s\n%r" % (service,data)
+    url = '%s/%s/%s' % (self.base_url, service, data)
+    req = urllib2.Request(url)
+    print "Trying %s %s" % (service,url)
     req.add_header("Content-Type", "application/json")
     res = urllib2.urlopen(req)
     r = res.read()
@@ -60,8 +60,8 @@ class MyService(object):
 
   # A real project might subclass the base service class, but this function is here as an example.
   # Real projects often have multiple services.
-  def json(self, ip=None):
-    # Using the Free Geo IP service as an example.
-    # freegeoip.net/{format}/{ip_or_hostname}
+  def api(self, ip=None):
+    # Using a Geo IP service as an example.
+    # http://geoip.nekudo.com/api/{ip}/{language}/{type}
     # This function is named json, so _call_svc will pull out the "json" and use it as the service name.
     return self._call_svc(ip)

@@ -310,7 +310,7 @@ class BaseForm(object):
   def submit_form(self, element_spec):
     '''Submits the form element_spec'''
     form = self.find_the(element_spec)
-    print "submit form " % (element_spec)
+    print "submit form %s" % (element_spec)
     form.submit()
 
 

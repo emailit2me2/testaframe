@@ -118,9 +118,6 @@ class TestCaseBase(object):
       except WebDriverException, exc:
         print "  Waiting for element(s): %5.2fsecs" % (time.time() - start)
         time.sleep(self.poll_delay)
-      except StaleElementReferenceException, exc:
-        print "  Stale element Exception: %5.2fsecs - %s" % ((time.time() - start), exc)
-        time.sleep(self.poll_delay)
       except AssertionError, exc:
         print "  Waiting for try_is(%s): %5.2fsecs" % (sym, time.time() - start)
         time.sleep(self.poll_delay)
@@ -175,11 +172,31 @@ class TestCaseBase(object):
   def try_is_ge(self, a, b, msg='', only_if=True):
     self.try_is(a, lambda a,b: a>=b, '>=', b, msg, only_if)
 
+  def try_is_lt_all(self, a, b, msg='', only_if=True):
+    self.try_is(a, lambda a,b: a<min(b), '<min', b, msg, only_if)
+
+  def try_is_le_all(self, a, b, msg='', only_if=True):
+    self.try_is(a, lambda a,b: a<=min(b), '<=min', b, msg, only_if)
+
+  def try_is_gt_all(self, a, b, msg='', only_if=True):
+    self.try_is(a, lambda a,b: a>max(b), '>max', b, msg, only_if)
+
+  def try_is_ge_all(self, a, b, msg='', only_if=True):
+    self.try_is(a, lambda a,b: a>=max(b), '>=max', b, msg, only_if)
+
   def try_is_in(self, a, b, msg='', only_if=True):
     self.try_is(a, lambda a,b: a in b, 'in', b, msg, only_if)
 
   def try_is_not_in(self, a, b, msg='', only_if=True):
     self.try_is(a, lambda a,b: a not in b, 'not in', b, msg, only_if)
+
+  def try_is_in_order_inc(self, expected, actual=None, msg='', only_if=True):
+    self.try_is(expected, lambda expected, actual: expected == sorted( expected, cmp=actual),
+      'in order inc', actual, msg, only_if)
+
+  def try_is_in_order_dec(self, expected, actual=None, msg='', only_if=True):
+    self.try_is( expected, lambda expected, actual: expected == sorted( expected, cmp=actual, reverse=True),
+      'in order dec', actual, msg, only_if)
 
   def warn_is_equal(self, a, b, msg='', only_if=True):
     try:

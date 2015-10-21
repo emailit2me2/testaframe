@@ -25,9 +25,8 @@ class ArticlePage(StdPage):
   MOBILE_VIEW_LINK_TEXT = 'Mobile view'
   def _prep_finders(self):
     StdPage._prep_finders(self)
-    self.verify_element = self.by_css('.mediawiki')
+    self.verify_element = self.by_css('.mw-wiki-logo')
     # See docs for: Add a new page class
-    self.verify_element = self.by_css('.collapsible-nav')
 
     # See docs for: Add a locator to a page
     self.powered_by_link = self.by_css('#footer-poweredbyico a')
@@ -60,5 +59,5 @@ class ArticlePageFF(ArticlePage):
 class MobileArticlePage(ArticlePage):
   def _prep_finders(self):
     ArticlePage._prep_finders(self)
-    self.verify_element = self.by_css('.section_heading')
+    self.verify_element = self.by_css('.mw-mobile-mode')
   
