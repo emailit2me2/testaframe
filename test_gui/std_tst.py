@@ -1,23 +1,34 @@
 
 from nose.plugins.attrib import attr
 
-from base_tst import *
+import base_tst
+
+import services.svc_factory
+
 
 @attr('Api')
-class StdApiTestBase(TestCaseBase):
-  def setUp(self):
-    self.env_prep_for_svc()
-    TestCaseBase.setUp(self)
+class StdApiTestBase(base_tst.TestCaseBase):
+
+    def setUp(self):
+        base_tst.TestCaseBase.setUp(self)
+        print "Setup ^^^^^^^^^^^^^^^^^^^^^^^^"
+
+    def tearDown(self):
+        print "Teardown vvvvvvvvvvvvvvvvvvvvv"
+        base_tst.TestCaseBase.tearDown(self)
 
 
 @attr('Gui')
-class StdGuiTestBase(GuiTestCaseBase):
-  pass
-  def setUp(self):
-    self.env_prep_for_se()
-    GuiTestCaseBase.setUp(self)
-  def tearDown(self):
-    self.env_teardown()
-    GuiTestCaseBase.tearDown(self)
+class StdGuiTestBase(base_tst.GuiTestCaseBase):
+
+    def setUp(self):
+        base_tst.GuiTestCaseBase.setUp(self)
+        print "Setup ^^^^^^^^^^^^^^^^^^^^^^^^"
+
+    def tearDown(self):
+        print "Teardown vvvvvvvvvvvvvvvvvvvvv"
+        base_tst.GuiTestCaseBase.tearDown(self)
 
 
+class StdGuiStandAloneBase(base_tst.AutomationBase):
+        pass

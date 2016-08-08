@@ -1,7 +1,10 @@
-syntax: glob
-*.pyc
-chromedriver.log
-ghostdriver.log
-my_cfg.py
-pydocs/
+
 README.html
+config/my_cfg.py
+run_user.py
+
+*.py[cod]
+
+# Unit test / coverage reports
+nosetests.xml
+

@@ -1,8 +1,13 @@
 nose
+nose_xunitmp
 selenium
 requests
-# commented out packages are optional
-#docutils
-#epydoc
-#beautifulsoup4
+docutils
+enum34
+PyYAML
+beautifulsoup4
+publicsuffix
+MySQL-python
+boto3
+pyPdf
 #Werkzeug

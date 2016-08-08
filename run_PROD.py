@@ -8,23 +8,21 @@ excludes = []  # 'package.module'
 
 count = 1
 environments = [
-    # 'Localhost',
-    #  'LocalVM',
-    'Staging',
+    #  'Localhost',
+    #  'Staging',
     #  'Dev',
     #  'CI',
     #  'QA',
-    # 'Prod',
+    'Prod',
 ]
-
 browsers = [
-    'Local_FF',
+    #  'Local_FF',
     #  'Local_Chrome',
     #  'Local_PhantomJS',
     #  'Local_IE',
     #  'Linux_FF',
     #  'Linux_Chrome',
-    #  'OSX_FF',
+    'OSX_FF',
     #  'OSX_Chrome',
     #  'IPhone',
     #  'Android',
