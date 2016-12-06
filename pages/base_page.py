@@ -744,7 +744,8 @@ class BaseComponent(BaseUiObject):
         BaseUiObject.__init__(self, parent, params, substitutions=substitutions)
 
     def verify_required_components(self, driver):
-        if len(self.verify_component_elements) < 1:
+        if not self.verify_component_elements:
+            print "Please add locators to verify_component_elements list."
             return False
 
         actual = True
@@ -784,7 +785,7 @@ class BaseForm(BaseComponent):
     """
     def verify_form_showing(self):
         """Similar to L{BasePage.verify_on_page} but for forms. Maintained for Backwards compatability."""
-        self.verify_required_components = [self.verify_form_element]
+        self.verify_component_elements = [self.verify_form_element]
         return self.parent.make_waiter().until(self.verify_required_components)
 
     def submit_form(self, element_spec):
