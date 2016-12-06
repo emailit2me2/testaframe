@@ -58,7 +58,11 @@ class LoginStateComponentSelector:
     @staticmethod
     def get_appropriate_login_component(is_logged_in=False, fake=False):
         if fake:
-            return FauxLogoutComponent
+            if is_logged_in:
+                return FauxLogoutComponent
+            else:
+                return FauxLoginComponent
+                
         if not is_logged_in:
             return LoginComponent
 
