@@ -27,13 +27,20 @@ class StdPage(BasePage):
 
     def now_on(self, page_class, params='', substitutions=(), **args_for_page):
         new_page = BasePage.now_on(self, page_class, params, substitutions, **args_for_page)
-        
+
         # Set the appropriate login state
-        from pages.wiki_state_component import LoginStateComponentSelector
+        from pages.wiki_state_component import LoginStateComponentSelector, LoginStateComponentBase
+        
+        is_logged_in = False
+        if LoginStateComponentBase.ID in self.components:
+            is_logged_in = self.components[LoginStateComponentBase.ID].is_logged_in
+
         new_page.now_showing_component(
             LoginStateComponentSelector.get_appropriate_login_component(
-                self.nav_bar.is_logged_in,
+                is_logged_in,
                 fake=not new_page.IS_STATE_SUPPORTED))
+
+        return new_page
 
 
 class StdStatefulPage(StdPage):
@@ -43,7 +50,8 @@ class StdStatefulPage(StdPage):
         StdPage._prep_finders(self)
 
     def goto_login(self):
-        login_component = self.components['login_state']
+        from pages.wiki_state_component import LoginStateComponentBase
+        login_component = self.components[LoginStateComponentBase.ID]
         if not login_component.is_logged_in:
             logged_in_page = login_component.goto_login()
             return logged_in_page
@@ -51,7 +59,8 @@ class StdStatefulPage(StdPage):
             raise UnexpectedStateError("The login link is not available in this state.")
 
     def goto_logout(self):
-        login_component = self.components['login_state']
+        from pages.wiki_state_component import LoginStateComponentBase
+        login_component = self.components[LoginStateComponentBase.ID]
         if login_component.is_logged_in:
             login_component.is_logged_in = False
             logged_out_page = login_component.goto_logout()

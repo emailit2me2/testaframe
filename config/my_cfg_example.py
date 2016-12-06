@@ -76,4 +76,8 @@ config = {
         "password": "",
     },
 
+    'wiki_creds': {
+        'user': '',
+        'password': '',
+    },
 }

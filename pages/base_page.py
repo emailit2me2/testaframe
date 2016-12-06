@@ -114,18 +114,18 @@ class PageFactory(object):
         for module in modules:
             self.classes.update(dict(inspect.getmembers(sys.modules[module.__name__], inspect.isclass)))
 
-    def make_component(self, identifier, component_class, parent, params=''):
+    def make_component(self, component_class, parent, params=''):
         """Instantiate a new component"""
-        new_component = component_class(parent, params, identifier=identifier)
+        new_component = component_class(parent, params)
         self.tracker.track(self.tracker.Record.NEW_COMPONENT, component_class.__name__, value=params)
         return new_component
 
-    def show_component(self, identifier, component_class, parent, params=''):
+    def show_component(self, component_class, parent, params=''):
         """Make a new component object, verify it is being displayed."""
         print "show component %s" % (component_class.__name__)
-        new_component = self.make_component(identifier, component_class, parent, params)
+        new_component = self.make_component(component_class, parent, params)
         new_component.verify_component_showing()
-        parent.components[identifier] = new_component
+        parent.components[new_component.ID] = new_component
 
     def make_form(self, form_class, parent, params=''):
         """Instantiate a new form"""
@@ -737,13 +737,14 @@ class BaseComponent(BaseUiObject):
 
     All required component objects must exist on a page.
     """
+    
+    ID = "NOT_SET"
 
-    def __init__(self, parent, params, substitutions=(), identifier=""):
+    def __init__(self, parent, params, substitutions=()):
         BaseUiObject.__init__(self, parent, params, substitutions=substitutions)
-        self.id = identifier
 
     def verify_required_components(self, driver):
-        if len(self.verify_component_elements) <= 1:
+        if len(self.verify_component_elements) < 1:
             return False
 
         actual = True
@@ -755,7 +756,7 @@ class BaseComponent(BaseUiObject):
     def verify_component_showing(self):
         """Similar to L{BasePage.verify_on_page} but for components."""
         return self.parent.make_waiter().until(self.verify_required_components,
-                                               "Required components not found for component {0}.".format(self.id))
+                                               "Required components not found for component {0}.".format(self.ID))
 
 
 class BaseForm(BaseComponent):
@@ -980,7 +981,7 @@ class BasePage(BaseForm):
                 if hasattr(self, 'form'):  # TODO need a null object form here
                     self.form.verify_form_showing()
                 
-                for component in self.components.values:
+                for component in self.components.values():
                     component.verify_component_showing()
 
                 # self.tracker.track(self.tracker.Record.SNAP, "Now On: verified", value=self.__class__.__name__)

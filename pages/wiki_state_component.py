@@ -4,8 +4,9 @@ import wiki_pages
 
 class LoginStateComponentBase(base_page.BaseComponent):
 
+    ID = "login_state"
+
     def _prep_finders(self):
-        base_page.BaseComponent._prep_finders(self)
         self.is_logged_in = False
 
 
@@ -19,20 +20,20 @@ class LoginComponent(LoginStateComponentBase):
 
     def goto_login(self):
         self.click_on(self.login_link)
-        return self.now_on(wiki_pages.WikiLoginPage)
+        return self.parent.now_on(wiki_pages.WikiLoginPage)
 
 
 class LogoutComponent(LoginStateComponentBase):
 
     def _prep_finders(self):
         LoginStateComponentBase._prep_finders(self)
-        self.login_link = self.by_css('#pt-logout a')
+        self.logout_link = self.by_css('#pt-logout a')
         self.verify_component_elements = [self.logout_link]
         self.is_logged_in = True
 
     def goto_logout(self):
         self.click_on(self.logout_link)
-        return self.now_on(wiki_pages.WikiLogoutPage)
+        return self.parent.now_on(wiki_pages.WikiLogoutPage)
 
 
 class FauxLoginComponent(LoginComponent):
@@ -62,7 +63,7 @@ class LoginStateComponentSelector:
                 return FauxLogoutComponent
             else:
                 return FauxLoginComponent
-                
+
         if not is_logged_in:
             return LoginComponent
 

@@ -1,6 +1,6 @@
 
 import config.our_envs
-from std_pages import StdPage
+from std_pages import StdPage, StdStatefulPage
 
 # There should never be any asserts in pages
 # All asserts should be in the tests.
@@ -13,10 +13,15 @@ class WikiHomePage(StdPage):
     def _prep_finders(self):
         StdPage._prep_finders(self)
         self.verify_element = self.by_css('#www-wikipedia-org')
+        self.english_link = self.by_css('a#js-link-box-en')
+
+    def goto_english(self):
+        self.click_on(self.english_link)
+        return self.now_on(ArticlePage)
 
 
 # example page object for a wikipedia.org article
-class ArticlePage(StdPage):
+class ArticlePage(StdStatefulPage):
     HOST_ENUM = config.our_envs.Host.WIKIPEDIA
     # Every page needs a PAGE (or PAGE_SUB) or PAGE_RE (the _RE stands for regular expression,
     # like the re module) value to make sure the page URL is correct in verify_on_page().
@@ -26,7 +31,7 @@ class ArticlePage(StdPage):
     MOBILE_VIEW_LINK_TEXT = 'Mobile view'
 
     def _prep_finders(self):
-        StdPage._prep_finders(self)
+        StdStatefulPage._prep_finders(self)
         self.verify_element = self.by_css('.mw-wiki-logo')
         # See docs for: Add a new page class
 
@@ -35,6 +40,11 @@ class ArticlePage(StdPage):
         self.mobile_view_link = self.by_link_text(self.MOBILE_VIEW_LINK_TEXT)
         self.search_input = self.by_css('#searchInput')
         self.search_form = self.by_css('#searchform')
+        self.close_fundraising_link = self.by_css('#frbanner-close')
+
+    def on_load(self):
+        if self.can_find_the(self.close_fundraising_link):
+            self.click_on(self.close_fundraising_link)
 
     # See docs for: add a function to a page
     def do_search(self, search_term):
@@ -66,3 +76,38 @@ class MobileArticlePage(ArticlePage):
     def _prep_finders(self):
         ArticlePage._prep_finders(self)
         self.verify_element = self.by_link_text(self.DESKTOP_LINK_TEXT)
+
+
+class WikiIndexBasePage(StdStatefulPage):
+    HOST_ENUM = config.our_envs.Host.WIKIPEDIA
+
+    PAGE = "/w/index.php"
+
+    def _prep_finders(self):
+        StdStatefulPage._prep_finders(self)
+
+class WikiLoginPage(WikiIndexBasePage):
+
+    def _prep_finders(self):
+        WikiIndexBasePage._prep_finders(self)
+        self.login_form = self.by_css('form[name="userlogin"]')
+        self.verify_element = self.login_form
+        self.name_field = self.by_css("#wpName1")
+        self.password_field = self.by_css("#wpPassword1")
+
+    def do_login(self, username, password):
+        self.type_into(self.name_field, username)
+        self.type_into(self.password_field, password)
+        self.submit_form(self.login_form)
+
+        from pages.wiki_state_component import LoginStateComponentBase
+        self.components[LoginStateComponentBase.ID].is_logged_in = True
+
+        return self.now_on(ArticlePage)
+
+
+class WikiLogoutPage(WikiIndexBasePage):
+
+    def _prep_finders(self):
+        WikiIndexBasePage._prep_finders(self)
+        self.verify_element = self.by_css('body.page-Special_UserLogout')

@@ -68,3 +68,15 @@ class TestWikiGui(WikiTestBase):
         article_page = self.start.at(ArticlePage, substitutions=(article_to_use))
         self.is_in(article_to_use, article_page.get_title)
         mobile_page = article_page.goto_mobile_view()
+
+    @attr("Example", "Login")
+    def test_login_logout(self):
+        landing_page = self.start.at(WikiHomePage)
+        main_page = landing_page.goto_english()
+        login_page = main_page.goto_login()
+        wiki_creds = self.env.get_credentials('wiki_creds', {
+            'user': 'Please provide a user', 
+            'password': 'Please provide a password'
+            })
+        main_page = login_page.do_login(wiki_creds['user'], wiki_creds['password'])
+        logout_page = main_page.goto_logout()
