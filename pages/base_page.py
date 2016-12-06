@@ -114,6 +114,19 @@ class PageFactory(object):
         for module in modules:
             self.classes.update(dict(inspect.getmembers(sys.modules[module.__name__], inspect.isclass)))
 
+    def make_component(self, identifier, component_class, parent, params=''):
+        """Instantiate a new component"""
+        new_component = component_class(parent, params, identifier=identifier)
+        self.tracker.track(self.tracker.Record.NEW_COMPONENT, component_class.__name__, value=params)
+        return new_component
+
+    def show_component(self, identifier, component_class, parent, params=''):
+        """Make a new component object, verify it is being displayed."""
+        print "show component %s" % (component_class.__name__)
+        new_component = self.make_component(identifier, component_class, parent, params)
+        new_component.verify_component_showing()
+        parent.components[identifier] = new_component
+
     def make_form(self, form_class, parent, params=''):
         """Instantiate a new form"""
         new_form = form_class(parent, params)
@@ -269,10 +282,10 @@ class BaseUiObject(object):
         All classes derived from L{BasePage} must contain a C{self.verify_element} for use
         by L{BasePage.verify_on_page}.
 
-        All classes derived from L{BaseForm} must contain a C{self.verify_form_element} for use
-        by L{BasePage.verify_form_showing}.
+        All classes derived from L{BaseComponent} must contain a list C{self.verify_required_components} for use
+        by L{BasePage.verify_component_showing}.
         """
-        raise Exception('_prep_finders() must be defined by derived Pages and Forms.')
+        raise Exception('_prep_finders() must be defined by derived Pages and Components.')
 
     def wait(self, seconds, comment):
         """It is a test smell to have C{sleeps} in test code, so use polling or at least this wait. Still yucky though!
@@ -719,7 +732,33 @@ class WaiterWrapper:
             self.parent.tracker.track(self.parent.tracker.Record.POLL_END, 'Waiter')
 
 
-class BaseForm(BaseUiObject):
+class BaseComponent(BaseUiObject):
+    """The base component implementation class. Inherited by L{BaseForm}.
+
+    All required component objects must exist on a page.
+    """
+
+    def __init__(self, parent, params, substitutions=(), identifier=""):
+        BaseUiObject.__init__(self, parent, params, substitutions=substitutions)
+        self.id = identifier
+
+    def verify_required_components(self, driver):
+        if len(self.verify_component_elements) <= 1:
+            return False
+
+        actual = True
+        for element in self.verify_component_elements:
+            actual = actual and element.is_this_displayed()
+
+        return actual
+
+    def verify_component_showing(self):
+        """Similar to L{BasePage.verify_on_page} but for components."""
+        return self.parent.make_waiter().until(self.verify_required_components,
+                                               "Required components not found for component {0}.".format(self.id))
+
+
+class BaseForm(BaseComponent):
 
     """The base form implementation class. Inherited by L{BasePage}.
 
@@ -743,8 +782,9 @@ class BaseForm(BaseUiObject):
                           The value C{**supressed**} is displayed instead.
     """
     def verify_form_showing(self):
-        """Similar to L{BasePage.verify_on_page} but for forms."""
-        return self.parent.make_waiter().until(lambda driver: self.verify_form_element.is_this_displayed())
+        """Similar to L{BasePage.verify_on_page} but for forms. Maintained for Backwards compatability."""
+        self.verify_required_components = [self.verify_form_element]
+        return self.parent.make_waiter().until(self.verify_required_components)
 
     def submit_form(self, element_spec):
         """Submit a form"""
@@ -801,6 +841,7 @@ class BasePage(BaseForm):
         self.tracker = self.factory.tracker
         self.args = args_for_page
         self.window_name = self.factory.MAIN_WINDOW
+        self.components = {}
         if self.PAGE_SUB and substitutions:
             self.PAGE = self.PAGE_SUB % substitutions
         if not self.PAGE_RE:
@@ -938,6 +979,10 @@ class BasePage(BaseForm):
                 self.wait(self.EVIL_STABLE_PAGE_WAIT, 'stupid wait due to stale element problems')
                 if hasattr(self, 'form'):  # TODO need a null object form here
                     self.form.verify_form_showing()
+                
+                for component in self.components.values:
+                    component.verify_component_showing()
+
                 # self.tracker.track(self.tracker.Record.SNAP, "Now On: verified", value=self.__class__.__name__)
 
                 return
@@ -949,6 +994,14 @@ class BasePage(BaseForm):
             #
         # end while
         raise exc
+    
+    def now_showing_component(self, component_class, params=''):
+        """Set the currently displayed component.
+
+        @see: L{now_on}
+        """
+        print "Now showing {component_class.__name__}".format(**locals())
+        self.factory.show_component(component_class, self, params)
 
     def now_showing_form(self, form_class, params=''):
         """Set the currently displayed form.

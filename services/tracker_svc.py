@@ -34,6 +34,7 @@ class TrackerSvc(BaseService):
         START_AT = "Start At"
         NEW_PAGE = "New Page"
         NEW_FORM = "+New Form"
+        NEW_COMPONENT = "+New Component"
         REFRESH_PAGE = "+Refresh Page"
 
         # do action - poke
