@@ -1,6 +1,6 @@
 
-import MySQLdb
-import MySQLdb.cursors
+import pymysql
+import pymysql.cursors
 
 
 class BaseDb:
@@ -11,7 +11,7 @@ class BaseDb:
     def __init__(self, info, writes_allowed=True):
         assert info, "Credentials required for: %s" % self
         self.info = info
-        self.info.update({'cursorclass': MySQLdb.cursors.DictCursor})
+        self.info.update({'cursorclass': pymysql.cursors.DictCursor})
         self.writes_allowed = writes_allowed
         self._prep()
 
@@ -30,7 +30,7 @@ class BaseDb:
 
     def lazy_connect(self):
         if not self.db:
-            self.db = MySQLdb.connect(**self.info)
+            self.db = pymysql.connect(**self.info)
             self.db.autocommit(True)
 
     def close(self):

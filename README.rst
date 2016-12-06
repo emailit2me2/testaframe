@@ -34,7 +34,7 @@ System configuration
 
 You will need Python 2.7 installed.
 
-Clone the `testall repo <https://github.com/seomoz/testall>`_ to your local box.
+Clone the `testaframe repo <https://github.com/emailit2me2/testaframe>`_ to your local box.
 
 Required libraries (optional packages are commented out) in ``pip_requirements.txt``
 Install them using

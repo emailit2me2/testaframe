@@ -96,9 +96,10 @@ class AutomationBase(object):
             except Exception, exc2:
                 print exc2
             finally:
-                print exc
-        finally:
-            pass
+                raise exc
+        # TODO do we really need a finally here, and if so what should it do?
+        # finally:
+        #     pass
 
     def set_automation_mode(self, mode):
 

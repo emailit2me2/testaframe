@@ -7,7 +7,7 @@ enum34
 PyYAML
 beautifulsoup4
 publicsuffix
-MySQL-python
+PyMySql
 boto3
 pyPdf
 #Werkzeug
