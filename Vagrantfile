@@ -20,7 +20,7 @@
 # `vagrant ssh`
 ## run `chromium-browser` and it should show up in the GUI window
 ## close the browser
-## `nosetests run_user.py -m test_ma_login`
+## `nosetests run_user.py -m test_wikipedia`
 ## the test should run in the gui
 
 # This file is configured for browser testing inside the VM.
