@@ -18,8 +18,8 @@ environments = [
 ]
 
 browsers = [
-    'Local_FF',
-    #  'Local_Chrome',
+    #  'Local_FF',
+      'Local_Chrome',
     #  'Local_PhantomJS',
     #  'Local_IE',
     #  'Linux_FF',

@@ -1,0 +1,12 @@
+version: '2'
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - 24444:4444 # Selenium
+      - 25900:5900 # VNC
+      - 29222:9222 # Chrome Debugger
+    volumes:
+      - ./run_tests.sh:/home/seluser/testaframe/run_tests.sh
+      - .:/home/seluser/testaframe

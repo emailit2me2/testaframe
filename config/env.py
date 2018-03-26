@@ -164,11 +164,10 @@ class Local_Chrome_OSBrowser(OSBrowserEnv):
         return "Local_Chrome Se for %s" % self.__class__.__name__
 
     def get_se_driver(self):
-        #    opts = Options()
-        #    opts.add_extension('/tmp/kgf3_0_59_0.crx')
-        ret = webdriver.Chrome()  # chrome_options=opts)
-        size = ret.get_window_size()
-        ret.set_window_size(1550, size['height'])  # TODO put this in config.my_cfg
+        opts = Options()
+        opts.add_argument('start-maximized')
+        #opts.add_argument('remote-debugging-port=9222')
+        ret = webdriver.Chrome(chrome_options=opts)
         return ret
 
 
