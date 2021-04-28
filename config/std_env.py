@@ -11,7 +11,7 @@ L{config.base_env} has all the base environment classes.
 import os
 import tempfile
 
-import base_env
+from . import base_env
 
 import services.svc_factory
 

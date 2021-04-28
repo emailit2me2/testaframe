@@ -17,8 +17,8 @@ To add a new host:
 
 from collections import OrderedDict
 
-from env_enums import *
-import my_cfg
+from .env_enums import *
+from . import my_cfg
 
 envs = {
     Environment.LOCALHOST: {
@@ -97,11 +97,11 @@ envs = {
 
 # In place tests to make sure everything stays clean, consistent, and sorted.
 enum_hosts = list(Host)
-enum_keys = Host.__members__.keys()
+enum_keys = list(Host.__members__.keys())
 
-prod_keys = envs[Environment.PROD][SpecGroup.HOSTS].keys()
-stage_keys = envs[Environment.STAGING][SpecGroup.HOSTS].keys()
-local_keys = envs[Environment.LOCALHOST][SpecGroup.HOSTS].keys()
+prod_keys = list(envs[Environment.PROD][SpecGroup.HOSTS].keys())
+stage_keys = list(envs[Environment.STAGING][SpecGroup.HOSTS].keys())
+local_keys = list(envs[Environment.LOCALHOST][SpecGroup.HOSTS].keys())
 
 # Overwrite specified environments from my_cfg if applicable
 overwrite_envs = my_cfg.config.get('OVERWRITE_ENVS')

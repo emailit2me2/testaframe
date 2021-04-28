@@ -10,7 +10,8 @@ import config.our_envs
 import data.databuilder
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-import std_env
+from selenium.webdriver.chrome.options import Options
+from . import std_env
 import traceback
 
 
@@ -94,7 +95,7 @@ class Prod_Env(SystemEnv):
         #                                             "run_PROD.py can not be run multiprocess."
         # fail for multiprocess in Prod_env (above) or only warn (below)  # TODO add to config.our_envs.py
         if [] != [arg for arg in sys.argv if arg.startswith('--processes')]:
-            print "Warning: running multiprocess can be dangerous against Prod."
+            print("Warning: running multiprocess can be dangerous against Prod.")
         SystemEnv.__init__(self, *args)
 
     def create_data_builder(self):
@@ -164,11 +165,10 @@ class Local_Chrome_OSBrowser(OSBrowserEnv):
         return "Local_Chrome Se for %s" % self.__class__.__name__
 
     def get_se_driver(self):
-        #    opts = Options()
-        #    opts.add_extension('/tmp/kgf3_0_59_0.crx')
-        ret = webdriver.Chrome()  # chrome_options=opts)
-        size = ret.get_window_size()
-        ret.set_window_size(1550, size['height'])  # TODO put this in config.my_cfg
+        opts = Options()
+        opts.add_argument('start-maximized')
+        #opts.add_argument('remote-debugging-port=9222')
+        ret = webdriver.Chrome(chrome_options=opts)
         return ret
 
 
@@ -273,7 +273,7 @@ class IPhone_OSBrowser(OSBrowserEnv):
     def env_driver(self):
         host = config.my_cfg.config['HOST']['IPHONE']
         dc = DesiredCapabilities.IPHONE
-        print dc, host
+        print(dc, host)
         return webdriver.Remote(desired_capabilities=dc,
                                 command_executor='http://%s/wd/hub' % host)
 
@@ -291,7 +291,7 @@ class Android_OSBrowser(OSBrowserEnv):
     def env_driver(self):
         host = config.my_cfg.config['HOST']['ANDROID']
         dc = DesiredCapabilities.ANDROID
-        print dc, host
+        print(dc, host)
         return webdriver.Remote(desired_capabilities=dc,
                                 command_executor='http://%s/wd/hub' % host)
 

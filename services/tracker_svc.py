@@ -115,7 +115,7 @@ class TrackerSvc(BaseService):
         try:
             self.output_all_records()
         except Exception as e:
-            print e
+            print(e)
             return self.ERRORS_IN_TEARDOWN
 
         return self.SUCCESSFUL_TEARDOWN
@@ -203,7 +203,7 @@ class WriterBase(object):
 
         if record['values']:
             output += " Values={0!r}".format(record['values'])
-        print output
+        print(output)
 
 
 class WriteAsYouGo(WriterBase):
@@ -274,7 +274,7 @@ class JsonWriter(WriterBase):
         snapshot_dir = config.my_cfg.config.get('SNAPSHOT_DIR', '')
         if snapshot_dir:
             if config.my_cfg.config.get('SNAPSHOT_DIR_AUTOCREATE', False) and not os.path.exists(snapshot_dir):
-                print "Autocreating snapshot dir: %r" % snapshot_dir
+                print("Autocreating snapshot dir: %r" % snapshot_dir)
                 os.makedirs(snapshot_dir)
         else:
             snapshot_dir = tempfile.gettempdir()
@@ -299,7 +299,7 @@ class JsonWriter(WriterBase):
         json_path = os.path.join(snapshot_dir, '%s_records.json' % self.tst_name)
         json_file = open(json_path, mode='w')
         json.dump(record_data, json_file, indent=2)
-        print "Writing all records to:", json_path
+        print("Writing all records to:", json_path)
 
 
 class ReplayWriter(JsonWriter):
@@ -329,7 +329,7 @@ class ReplayWriter(JsonWriter):
 
         # Edit the HTML to have the test name
         self._write_out_template("replay/replay.html", replay_path)
-        print "Writing all info to:", replay_path
+        print("Writing all info to:", replay_path)
 
 
     def _write_out_template(self, orig_filename, out_filename):

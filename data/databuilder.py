@@ -20,7 +20,7 @@ class TestDataBuilder(object):
         uniq = self.get_uniq()
         uniq_username = "%s%8s" % (self.USERNAME, uniq)
         uniq_email = self.EMAIL_TMPL % uniq
-        print repr(uniq_username), repr(uniq_email), repr(self.EMAIL_TMPL)
+        print(repr(uniq_username), repr(uniq_email), repr(self.EMAIL_TMPL))
         password = self.DEFAULT_PASSWORD
         data = {
             "email": uniq_email, "password": password,
@@ -81,7 +81,7 @@ class ProdDataBuilder(object):
         uniq_first = 3
         uniq_username = "%s%8s" % (self.USERNAME, uniq)
         uniq_email = self.EMAIL_TMPL % uniq
-        print repr(uniq_username), repr(uniq_email)  # , repr(self.EMAIL_TMPL)
+        print(repr(uniq_username), repr(uniq_email))  # , repr(self.EMAIL_TMPL)
         password = self.DEFAULT_PASSWORD
         data = {
             "email": uniq_email, "password": password, "password": password,
@@ -105,7 +105,7 @@ class ProdDataBuilder(object):
         uniq_first = 3
         uniq_username = "%s%8s" % (self.USERNAME, uniq)
         uniq_email = self.EMAIL_TMPL % uniq
-        print repr(uniq_username), repr(uniq_email)  # , repr(self.EMAIL_TMPL)
+        print(repr(uniq_username), repr(uniq_email))  # , repr(self.EMAIL_TMPL)
         data = {
             "first_name": self.USERNAME + uniq[:uniq_first],
             "last_name": "Last%s" % (uniq[uniq_first:],),
@@ -123,13 +123,13 @@ class ProdDataBuilder(object):
 
     def get_random_autogen_string(self):
         str_length = 8
-        my_string = ''.join([random.choice(string.ascii_letters) for n in xrange(str_length)])
+        my_string = ''.join([random.choice(string.ascii_letters) for n in range(str_length)])
         return my_string
 
     def uniq_comment(self, orig_comment=''):
         uniq = self.get_uniq()
-        tmpl = u' \xC1ccented $5/mo %s Product & "stuff" \u4E2D\u56FD '
-        tmpl = u' %s '
+        tmpl = ' \xC1ccented $5/mo %s Product & "stuff" \u4E2D\u56FD '
+        # tmpl = ' %s '
         return {
             'comment': orig_comment + tmpl % (uniq,),
             'stripped_comment': (orig_comment + tmpl % (uniq,)).strip(),

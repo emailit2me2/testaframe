@@ -88,7 +88,7 @@ class BaseEnv(object):
         # print "checking if writes are allowed"
         if not self.allows_writes():
             raise SkipTest("no writes allowed in this env")
-        print "writes are allowed in this env"
+        print("writes are allowed in this env")
 
     def get_my_js(self):
         return self.MY_JS
@@ -194,7 +194,7 @@ class BaseOSBrowserEnv(object):
         # negative test cases don't have misleading warning messages.
         try:
             if 'Internal Server Error' in self.driver.page_source:
-                print "\nFailed with Internal Server Error\n"
+                print("\nFailed with Internal Server Error\n")
         except selenium.common.exceptions.StaleElementReferenceException as e:
             pass  # it is OK if there are no errors.
         #
@@ -210,48 +210,48 @@ class BaseOSBrowserEnv(object):
             snapshot_dir = config.my_cfg.config.get('SNAPSHOT_DIR', '')
             if snapshot_dir:
                 if config.my_cfg.config.get('SNAPSHOT_DIR_AUTOCREATE', False) and not os.path.exists(snapshot_dir):
-                    print "Autocreating snapshot dir: %r" % snapshot_dir
+                    print("Autocreating snapshot dir: %r" % snapshot_dir)
                     os.makedirs(snapshot_dir)
             else:
                 snapshot_dir = tempfile.gettempdir()
             if errors or config.my_cfg.config.get('SAVE_SCREENSHOT', False):
                 # TODO make an option for named screenshot and/or latest
                 snap = os.path.join(snapshot_dir, "snap_%s.png" % test_name)
-                print "saving screenshot as: %s" % snap
+                print("saving screenshot as: %s" % snap)
                 if not self.driver.get_screenshot_as_file(snap):
-                    print "FAILED to write snap"
+                    print("FAILED to write snap")
                 snap = os.path.join(snapshot_dir, "snap_%s.png" % 'last_test')
-                print "saving screenshot as: %s" % snap
+                print("saving screenshot as: %s" % snap)
                 if not self.driver.get_screenshot_as_file(snap):
-                    print "FAILED to write snap"
+                    print("FAILED to write snap")
             if errors or config.my_cfg.config.get('SAVE_SOURCE', False):
                 source = os.path.join(snapshot_dir, "source_%s.html" % test_name)
-                print "saving source as: %s" % source
+                print("saving source as: %s" % source)
                 f = open(source, 'wb')
                 f.write(self.driver.page_source.encode('utf8'))
                 f.close()
                 source = os.path.join(snapshot_dir, "source_%s.html" % 'last_test')
-                print "saving source as: %s" % source
+                print("saving source as: %s" % source)
                 f = open(source, 'wb')
                 f.write(self.driver.page_source.encode('utf8'))
                 f.close()
             tb = sys.exc_info()[2]
             if tb:  # then we probably took an exception/assert
-                print "=========== Call stack ==========="
+                print("=========== Call stack ===========")
                 tb = tb.tb_next  # pull off the 2 boilerplate nose test runner frames
                 tb = tb.tb_next
                 while tb:
                     line = linecache.getline(tb.tb_frame.f_code.co_filename, tb.tb_lineno)[:-1]
                     for l in inspect.getsource(tb.tb_frame).split('\n'):
                         if line == l:
-                            print "-->", l
+                            print("-->", l)
                         else:
-                            print "   ", l
-                    print "-" * 60
+                            print("   ", l)
+                    print("-" * 60)
 
                     tb = tb.tb_next
                 # end while tb frames
-                print "=================================="
+                print("==================================")
         #
         finally:
             if quit_driver and self.driver:
@@ -262,12 +262,12 @@ class BaseOSBrowserEnv(object):
         snapshot_dir = config.my_cfg.config.get('SNAPSHOT_DIR', '')
         if snapshot_dir:
             if config.my_cfg.config.get('SNAPSHOT_DIR_AUTOCREATE', False) and not os.path.exists(snapshot_dir):
-                print "Autocreating snapshot dir: %r" % snapshot_dir
+                print("Autocreating snapshot dir: %r" % snapshot_dir)
                 os.makedirs(snapshot_dir)
         else:
             snapshot_dir = tempfile.gettempdir()
         snap = os.path.join(snapshot_dir, "snap_%s.png" % (snap_name))
-        print "saving screenshot as: %s" % snap
+        print("saving screenshot as: %s" % snap)
         self.driver.get_screenshot_as_file(snap)
 
     def full_snapshot_id(self, snapshot_id, env_name):
@@ -276,16 +276,16 @@ class BaseOSBrowserEnv(object):
     def get_grid_wd(self, caps, host):
         wd = webdriver.Remote(desired_capabilities=caps,
                               command_executor='http://%s/wd/hub' % host)
-        print "Remote capabilities", wd.desired_capabilities
+        print("Remote capabilities", wd.desired_capabilities)
         info_url = "http://%s/grid/api/testsession?session=%s" % (host, wd.session_id)
         import requests
         r = requests.get(info_url, headers={"Content-Type": "application/json"})
         if r.status_code == 200:
             ret = json.loads(r.content)
             # TODO Check data structures, and all return types
-            print "Got remote grid session info %s" % repr(ret)
+            print("Got remote grid session info %s" % repr(ret))
         else:
-            print >> sys.stderr, "Error calling for info: %s %s" % (r.status_code, r.content)
+            print("Error calling for info: %s %s" % (r.status_code, r.content), file=sys.stderr)
         # end
         return wd
 

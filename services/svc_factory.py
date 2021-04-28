@@ -14,10 +14,10 @@
 """
 import traceback
 
-import imap_svc
-import tracker_svc
-import recorder_svc
-import wikipedia_svc
+from . import imap_svc
+from . import tracker_svc
+from . import recorder_svc
+from . import wikipedia_svc
 
 
 class ServiceFactory(object):
@@ -34,21 +34,21 @@ class ServiceFactory(object):
 
     def teardown_all(self):
         """Performs a teardown of all services created by the factory."""
-        print "----------Begin Service Teardown----------"
+        print("----------Begin Service Teardown----------")
         teardown_success = True
 
         for service in reversed(self.generated_services):
             try:
-                print "Tearing down: %s VVVVVVVVVVVVV" % repr(service)
+                print("Tearing down: %s VVVVVVVVVVVVV" % repr(service))
                 teardown_success = teardown_success and service.teardown()
-            except Exception, exc:
+            except Exception as exc:
                 teardown_success = False
                 traceback.print_exc()
-        print "-----------End Service Teardown-----------"
+        print("-----------End Service Teardown-----------")
         assert teardown_success, "Teardown steps within some services encountered errors. (See above teardown output)"
 
     def publish_to_all(self, pubsub_item, **kwargs):
-        print "Publishing", pubsub_item, "with", kwargs
+        print("Publishing", pubsub_item, "with", kwargs)
 
         for service in self.generated_services:
             callable = service.pubsub_items.get(pubsub_item, None)
@@ -57,7 +57,7 @@ class ServiceFactory(object):
 
     def _remember_service(self, service):
         service.factory = self
-        print "Creating %s" % repr(service)
+        print("Creating %s" % repr(service))
         self.generated_services.append(service)
         return service
 

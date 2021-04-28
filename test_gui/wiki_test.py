@@ -4,7 +4,7 @@
 from data.databuilder import *
 from nose.plugins.attrib import attr
 from pages.wiki_pages import *
-from std_tst import *
+from .std_tst import *
 
 
 @attr('Wiki')
@@ -17,7 +17,7 @@ class WikiTestBase(StdGuiTestBase):
 
     def execute_js_on(self, page):
         # for use with bookmarklets
-        print "Executing my js for %s" % self.env_sut_host()
+        print("Executing my js for %s" % self.env_sut_host())
         page.execute_javascript(self.env_get_my_js())
 
 

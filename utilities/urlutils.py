@@ -1,6 +1,6 @@
 """Utilities for handling URLs."""
 
-import urlparse
+import urllib.parse
 
 from publicsuffix import PublicSuffixList
 _psl = PublicSuffixList()
@@ -17,7 +17,7 @@ def join(*parts):
 def slice_url(url):
     """Return a list of parts of the URL
     """
-    parsed = urlparse.urlparse(url)
+    parsed = urllib.parse.urlparse(url)
     parts = ["{0}://{1}".format(parsed.scheme, parsed.netloc)]
     parts = parts + parsed.path.split('/')
     return parts
@@ -33,11 +33,11 @@ def get_root_domain(hostname):
 
 def get_query(url):
     """Get the query portion of a URL."""
-    parsed = urlparse.urlparse(url)
+    parsed = urllib.parse.urlparse(url)
     return parsed.query
 
 
 def get_query_as_dict(url):
     """Gets a dictionary version of the query in a URL"""
     query = get_query(url)
-    return urlparse.parse_qs(query)
+    return urllib.parse.parse_qs(query)

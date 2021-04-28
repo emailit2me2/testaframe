@@ -15,7 +15,7 @@ http://www.example-code.com/asp/imap-search-examples.asp
 import imaplib
 import time
 import email
-import base_svc
+from . import base_svc
 
 
 class MailBox(base_svc.BaseWebService):
@@ -78,7 +78,7 @@ class MailBox(base_svc.BaseWebService):
         status, data = self.imap.search(None, 'ALL')
         for num in reversed(data[0].split()):
             status, data = self.imap.fetch(num, '(RFC822)')
-            print 'Message %s\n%s\n' % (num, data[0][1])
+            print('Message %s\n%s\n' % (num, data[0][1]))
 
     def get_latest_email_sent_to(self, email_address):
         self.start()
@@ -89,7 +89,7 @@ class MailBox(base_svc.BaseWebService):
             # before searching, we get intermittent failures.
             status, data = self.imap.select('Inbox')
             if status != 'OK':
-                print "  Polling for email to arrive"
+                print("  Polling for email to arrive")
                 time.sleep(self.poll_time_to_wait)
                 continue
             status, data = self.imap.search(None, 'TO', email_address)
@@ -100,7 +100,7 @@ class MailBox(base_svc.BaseWebService):
                     pieces = self.split_out_mail_pieces(msg)
                     self.finish()
                     return pieces
-            print "  Polling for email to arrive"
+            print("  Polling for email to arrive")
             time.sleep(self.poll_time_to_wait)
         self.finish()
         raise AssertionError("No email sent to '%s' found in inbox "
@@ -146,13 +146,13 @@ class MailBox(base_svc.BaseWebService):
     def get_emails_with_body_containing(self, search, min_emails=1):
         ## take a username to further specify
         self.start()
-        print "email body search text: %r" % search
+        print("email body search text: %r" % search)
         results = None
         start = time.time()
         while time.time() - start < self.max_time_to_wait:
             self.imap.select()
             typ, results = self.imap.search(None, 'BODY', search)
-            print typ, results
+            print(typ, results)
             all = []
             for num in results[0].split():
                 typ, msg = self.fetch_message(num)
@@ -166,19 +166,19 @@ class MailBox(base_svc.BaseWebService):
             #else wait a bit
             time.sleep(self.poll_time_to_wait)
         # end while not timeout
-        print "TIMEDOUT"
+        print("TIMEDOUT")
         self.finish()
         return []
 
     def find_emails_with_body_containing(self, search):
         self.start()
-        print "email body search text: %r" % search
+        print("email body search text: %r" % search)
         results = None
         start = time.time()
         while time.time() - start < self.max_time_to_wait:
             self.imap.select()
             typ, results = self.imap.search(None, 'BODY', search)
-            print typ, results
+            print(typ, results)
             if results[0]:
                 self.finish()
                 return True
@@ -186,20 +186,20 @@ class MailBox(base_svc.BaseWebService):
             # else wait a bit
             time.sleep(self.poll_time_to_wait)
         # end while not timeout
-        print "TIMEDOUT"
+        print("TIMEDOUT")
         self.finish()
         return False
 
     def find_emails_to_with_subject_containing(self, to, search, max_time_to_wait=MAX_TIME_TO_WAIT,
                                                poll_time_to_wait=POLL_TIME_TO_WAIT):
         self.start()
-        print "email to {0} with subject search text: {1}".format(to, search)
+        print("email to {0} with subject search text: {1}".format(to, search))
         results = None
         start = time.time()
         while time.time() - start < max_time_to_wait:
             self.imap.select()
             typ, results = self.imap.search(None, '(HEADER Subject "{search}" TO "{to}")'.format(**locals()))
-            print typ, results
+            print(typ, results)
             if results[0]:
                 self.finish()
                 return True
@@ -207,7 +207,7 @@ class MailBox(base_svc.BaseWebService):
             # else wait a bit
             time.sleep(poll_time_to_wait)
         # end while not timeout
-        print "TIMEDOUT"
+        print("TIMEDOUT")
         self.finish()
         return False
 

@@ -1,6 +1,6 @@
 
 import config.our_envs
-from std_pages import StdPage, StdStatefulPage
+from .std_pages import StdPage, StdStatefulPage
 
 # There should never be any asserts in pages
 # All asserts should be in the tests.
