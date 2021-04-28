@@ -22,8 +22,8 @@ class TestSelf(MySelfTestBase):
 
     def setUp(self):
         MySelfTestBase.setUp(self)
-        self.set_poll_max(1.0)
-        self.set_poll_delay(0.001)
+        self.set_poll_max(0.1)
+        self.set_poll_delay(0.01)
 
     def yieldor(self, lst):
         for item in lst:
@@ -229,10 +229,10 @@ class TestSelf(MySelfTestBase):
         self.is_in_order_dec(dec)
         self.try_is_in_order_inc(inc)
         self.try_is_in_order_dec(dec)
-        self.is_in_order_inc(incs, lambda a,b: cmp(int(a), int(b)))
-        self.is_in_order_dec(decs, lambda a,b: cmp(int(a), int(b)))
-        self.try_is_in_order_inc(incs, lambda a,b: cmp(int(a), int(b)))
-        self.try_is_in_order_dec(decs, lambda a,b: cmp(int(a), int(b)))
+        self.is_in_order_inc(incs, lambda a: int(a))
+        self.is_in_order_dec(decs, lambda a: int(a))
+        self.try_is_in_order_inc(incs, lambda a: int(a))
+        self.try_is_in_order_dec(decs, lambda a: int(a))
         self.try_is_gt_all(11, dec)
         self.try_is_lt_all(4, dec)
         self.try_is_ge_all(10, dec)

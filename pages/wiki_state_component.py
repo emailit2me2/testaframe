@@ -1,6 +1,6 @@
 
-import base_page
-import wiki_pages
+from . import base_page
+from . import wiki_pages
 
 class LoginStateComponentBase(base_page.BaseComponent):
 

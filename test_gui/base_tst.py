@@ -79,7 +79,7 @@ class AutomationBase(object):
         self.set_poll_delay(self.default_poll_delay)
 
         if self.AUTO_MODE is self.AutomationMode.NONE:
-            print "WARNING: Automation Mode is unset. This should only be the case for Terminators."
+            print("WARNING: Automation Mode is unset. This should only be the case for Terminators.")
 
         try:
             self.prepare_tst_env(self.ENV, self.OS_BROWSER)
@@ -87,14 +87,14 @@ class AutomationBase(object):
             # Set up environment
             self.init_environment()
 
-        except Exception, exc:
-            print exc
+        except Exception as exc:
+            print(exc)
             try:
                 if self.start.driver:
                     self.start.driver.quit()
                     # time.sleep(5) # getting Windows [32] error because process is not stopped, so lets wait a little
-            except Exception, exc2:
-                print exc2
+            except Exception as exc2:
+                print(exc2)
             finally:
                 raise exc
         # TODO do we really need a finally here, and if so what should it do?
@@ -123,7 +123,7 @@ class AutomationBase(object):
         try:
             self.print_attributes()  # at the end so tests, pages, and services can add them during the test
         except AssertionError:
-            print "Warning: Failed to find test attributes. This may be because of the test generator"
+            print("Warning: Failed to find test attributes. This may be because of the test generator")
 
         try:
             self.tracker.track(self.tracker.Record.SNAP, "teardown")
@@ -170,7 +170,7 @@ class AutomationBase(object):
         else:
             self.poll_max = poll_max
 
-        print "Setting poll max to %r %s" % (self.poll_max, message)
+        print("Setting poll max to %r %s" % (self.poll_max, message))
 
     def set_poll_delay(self, poll_delay=-1, message=''):
         """Set polling delay or return to default."""
@@ -179,7 +179,7 @@ class AutomationBase(object):
         else:
             self.poll_delay = poll_delay
 
-        print "Setting poll delay to %r %s" % (self.poll_delay, message)
+        print("Setting poll delay to %r %s" % (self.poll_delay, message))
 
     @staticmethod
     def find_automation_shortname():
@@ -202,11 +202,11 @@ class AutomationBase(object):
         '''Sometimes we need a value not just the attribute name (e.g. ProdSafe).
            Passing the key as a keyword arg forces it to be valid variable characters.
         '''
-        for (k, v) in kwargs.items():
+        for (k, v) in list(kwargs.items()):
             self.__dict__[self.VALUE_ATTRIBUTE + k] = v
 
     def print_attributes(self):
-        print 'test function name:', self.find_automation_name().split('.')[-1]
+        print('test function name:', self.find_automation_name().split('.')[-1])
         for a in dir(self):
             # i.e. not mixed case
             if a[0] != '_' and not a.islower() and not a.isupper() and a not in self.FILTERED_ATTRS:
@@ -232,7 +232,7 @@ class AutomationBase(object):
         for item in stuff:
             pprint.pprint(item)
         for (name, value) in sorted(things.items()):
-            print name, "="
+            print(name, "=")
             pprint.pprint(value)
 
     def wait(self, seconds, comment):
@@ -240,15 +240,15 @@ class AutomationBase(object):
 
         You should be using events for synchronization to avoid flakey tests.
         """
-        print "     !!! waiting %.1f second(s) because %s !!!" % (seconds, comment)
+        print("     !!! waiting %.1f second(s) because %s !!!" % (seconds, comment))
         time.sleep(seconds)
 
     def print_pass(self, msg):
-        print "PASS: %s" % msg
+        print("PASS: %s" % msg)
         self.tracker.track(self.tracker.Record.PASS, msg)
 
     def print_fail(self, msg):
-        print "FAIL: %s" % msg
+        print("FAIL: %s" % msg)
         self.tracker.track(self.tracker.Record.FAIL, msg)
 
     def is_op(self, expected_val, operation, symbol, actual_val_or_gen_or_func, msg, only_if):
@@ -268,30 +268,30 @@ class AutomationBase(object):
             in the exception message which is the expected TypeError exception. Wish we had overloading.
         """
         if not only_if:
-            print "  Skipping ?%s because only_if=%r\n" % (symbol, only_if,)
+            print("  Skipping ?%s because only_if=%r\n" % (symbol, only_if,))
             return
 
         try:
             actual_val_or_gen = actual_val_or_gen_or_func()
-        except TypeError, exc:
-            if self.NOT_CALLABLE_TEXT not in exc.message and self.LAMBDA_TEXT not in exc.message:
+        except TypeError as exc:
+            if self.NOT_CALLABLE_TEXT not in str(exc) and self.LAMBDA_TEXT not in str(exc):
                 raise exc
             # implied else
             actual_val_or_gen = actual_val_or_gen_or_func  # if it isn't callable that is OK
         #
         try:
-            actual_val = actual_val_or_gen.next()
-        except AttributeError:  # must just be a value
+            actual_val = next(actual_val_or_gen)
+        except (AttributeError, TypeError):  # must just be a value
             actual_val = actual_val_or_gen
         #
-        print "  %r: %r ?%s %r" % (operation(expected_val, actual_val), expected_val, symbol, actual_val)
+        print("  %r: %r ?%s %r" % (operation(expected_val, actual_val), expected_val, symbol, actual_val))
         if msg:
-            print msg
+            print(msg)
 
         try:
             fail_msg = "FAIL: %r not %s %r %s" % (expected_val, symbol, actual_val, msg)
             ret = ok_(operation(expected_val, actual_val), fail_msg)
-        except Exception, exc:
+        except Exception as exc:
             self.print_fail(fail_msg)
             raise
         #
@@ -324,44 +324,47 @@ class AutomationBase(object):
 
         """
         if not only_if:
-            print "  Skipping ?%s because only_if=%r\n" % (symbol, only_if,)
+            print("  Skipping ?%s because only_if=%r\n" % (symbol, only_if,))
             return
 
         self.tracker.track(self.tracker.Record.POLL_START, 'Try is')
         start = time.time()
+        last_exc = None
         while time.time() - start < self.poll_max:
             try:
                 try:
                     expected_val_or_gen = expected_val_or_gen_or_func()
-                except TypeError, exc:
-                    if self.NOT_CALLABLE_TEXT not in exc.message and self.LAMBDA_TEXT not in exc.message:
+                except TypeError as exc:
+                    if self.NOT_CALLABLE_TEXT not in str(exc) and self.LAMBDA_TEXT not in str(exc):
+                        last_exc = exc
                         raise exc
                     # implied else
                     expected_val_or_gen = expected_val_or_gen_or_func  # if it isn't callable that is OK
                 #
                 try:
                     actual_val_or_gen = actual_val_or_gen_or_func()
-                except TypeError, exc:
-                    if self.NOT_CALLABLE_TEXT not in exc.message and self.LAMBDA_TEXT not in exc.message:
+                except TypeError as exc:
+                    if self.NOT_CALLABLE_TEXT not in str(exc) and self.LAMBDA_TEXT not in str(exc):
+                        last_exc = exc
                         raise exc
                     # implied else
                     actual_val_or_gen = actual_val_or_gen_or_func  # if it isn't callable that is OK
                 #
                 try:
-                    expected_val = expected_val_or_gen.next()
-                except AttributeError:  # must just be a value
+                    expected_val = next(expected_val_or_gen)
+                except (AttributeError, TypeError):  # must just be a value
                     expected_val = expected_val_or_gen
                 #
                 try:
-                    actual_val = actual_val_or_gen.next()
-                except AttributeError:  # must just be a value
+                    actual_val = next(actual_val_or_gen)
+                except (AttributeError, TypeError):  # must just be a value
                     actual_val = actual_val_or_gen
                 #
-                print "-  %r: %r ?%s %r" % (operation(expected_val, actual_val), expected_val, symbol, actual_val)
+                print("-  %r: %r ?%s %r" % (operation(expected_val, actual_val), expected_val, symbol, actual_val))
                 try:
                     fail_msg = "FAIL: %r not %s %r %s" % (expected_val, symbol, actual_val, msg)
                     ret = ok_(operation(expected_val, actual_val), fail_msg)
-                except Exception, exc:
+                except Exception as exc:
                     self.print_fail(fail_msg)
                     raise
                 #
@@ -372,30 +375,35 @@ class AutomationBase(object):
                 self.tracker.track(self.tracker.Record.POLL_END, 'Try is')
                 return ret
             except WebDriverException as exc:
-                print "  Waiting for element(s): %5.2fsecs" % (time.time() - start)
+                last_exc = exc
+                print("  Waiting for element(s): %5.2fsecs" % (time.time() - start))
                 time.sleep(self.poll_delay)
             except StaleElementReferenceException as exc:
-                print "  Stale element Exception: %5.2fsecs - %s" % ((time.time() - start), exc)
+                last_exc = exc
+                print("  Stale element Exception: %5.2fsecs - %s" % ((time.time() - start), exc))
                 time.sleep(self.poll_delay)
             except AssertionError as exc:
-                print "  Waiting for try_is(%s): %5.2fsecs" % (symbol, time.time() - start)
+                last_exc = exc
+                print("  Waiting for try_is(%s): %5.2fsecs" % (symbol, time.time() - start))
                 time.sleep(self.poll_delay)
             except StopIteration as exc:
+                last_exc = exc
                 # once a generator raises an exception you can't call it again, so fail.
-                print "  Strange Exception broke a generator"
+                print("  Strange Exception broke a generator")
                 raise
             except SkipTest:
-                print "  Skipping test from try_is()"
+                print("  Skipping test from try_is()")
                 raise
             except Exception as exc:
+                last_exc = exc
                 # catchall for any other things that might go wrong
-                print "  General Exception: %5.2fsecs - %s" % ((time.time() - start), exc)
+                print("  General Exception: %5.2fsecs - %s" % ((time.time() - start), exc))
                 time.sleep(self.poll_delay)
             #
             # TODO pull sleep out to here?
         # end while
         self.tracker.track(self.tracker.Record.POLL_END, 'Try is')
-        raise exc
+        raise last_exc
 
     def is_equal(self, expected, actual, msg='', only_if=True):
         self.is_op(expected, lambda expected, actual: expected == actual, '==', actual, msg, only_if)
@@ -429,11 +437,19 @@ class AutomationBase(object):
         self.is_op(expected, lambda expected, actual: set(expected) == set(actual), 'set ==', actual, msg, only_if)
 
     def is_in_order_inc(self, expected, actual=None, msg='', only_if=True):
-        self.is_op(expected, lambda expected, actual: expected == sorted(expected, cmp=actual),
+        if actual:
+            self.is_op(expected, lambda expected, actual: expected == sorted(expected, key=actual),
+                   'in order inc', actual, msg, only_if)
+        else:
+            self.is_op(expected, lambda expected, actual: expected == sorted(expected),
                    'in order inc', actual, msg, only_if)
 
     def is_in_order_dec(self, expected, actual=None, msg='', only_if=True):
-        self.is_op(expected, lambda expected, actual: expected == sorted(expected, cmp=actual, reverse=True),
+        if actual:
+            self.is_op(expected, lambda expected, actual: expected == sorted(expected, key=actual, reverse=True),
+                   'in order dec', actual, msg, only_if)
+        else:
+            self.is_op(expected, lambda expected, actual: expected == sorted(expected, reverse=True),
                    'in order dec', actual, msg, only_if)
 
     def try_is_equal(self, expected, actual, msg='', only_if=True):
@@ -477,11 +493,19 @@ class AutomationBase(object):
         self.try_is(expected, lambda expected, actual: set(expected) == set(actual), 'set ==', actual, msg, only_if)
 
     def try_is_in_order_inc(self, expected, actual=None, msg='', only_if=True):
-        self.try_is(expected, lambda expected, actual: expected == sorted(expected, cmp=actual),
+        if actual:
+            self.try_is(expected, lambda expected, actual: expected == sorted(expected, key=actual),
+                    'in order inc', actual, msg, only_if)
+        else:
+            self.try_is(expected, lambda expected, actual: expected == sorted(expected),
                     'in order inc', actual, msg, only_if)
 
     def try_is_in_order_dec(self, expected, actual=None, msg='', only_if=True):
-        self.try_is(expected, lambda expected, actual: expected == sorted(expected, cmp=actual, reverse=True),
+        if actual:
+            self.try_is(expected, lambda expected, actual: expected == sorted(expected, key=actual, reverse=True),
+                    'in order dec', actual, msg, only_if)
+        else:
+            self.try_is(expected, lambda expected, actual: expected == sorted(expected, reverse=True),
                     'in order dec', actual, msg, only_if)
 
     def dict_lookup(self, dct, lookup):
@@ -532,9 +556,9 @@ class AutomationBase(object):
             print_a = "%r # %s" % (value_a, key_a)
             print_b = "%r # %s" % (value_b, key_b)
             if value_a == value_b:
-                print "PASS: %s == %s" % (print_a, print_b)
+                print("PASS: %s == %s" % (print_a, print_b))
             else:  # FAILED
-                print "FAIL: %s not == %s" % (print_a, print_b)
+                print("FAIL: %s not == %s" % (print_a, print_b))
                 result_a.append(print_a)
                 result_b.append(print_b)
         self.is_equal(result_a, result_b)
@@ -545,7 +569,7 @@ class AutomationBase(object):
             return True
         except Exception as exc:
             traceback.print_exc()
-            print "\nERROR: assertion error\n"
+            print("\nERROR: assertion error\n")
             return False
         #
 
@@ -555,7 +579,7 @@ class AutomationBase(object):
             return True
         except Exception as exc:
             traceback.print_exc()
-            print "\nERROR: assertion error\n"
+            print("\nERROR: assertion error\n")
             return False
         #
 
@@ -619,12 +643,12 @@ class TestCaseBase(AutomationBase):
             # grab the test class and name for regular test methods
             tn = frame.f_locals.get('testMethod', None)
             if tn:
-                ret = str(tn.im_self)
+                ret = str(tn.__self__)
                 return ret
             # grab test case names for generator tests.
             tn = frame.f_locals.get('g', None)
             if tn:
-                ret = "%s.%s.%s" % (tn.im_class.__module__, tn.im_class.__name__, str(tn.__name__))
+                ret = "%s.%s.%s" % (tn.__self__.__class__.__module__, tn.__self__.__class__.__name__, str(tn.__name__))
                 return ret
         assert False, "Could not determine test name"
 
@@ -665,7 +689,7 @@ class GuiTestCaseBase(TestCaseBase):
 
     def execute_js_on(self, page):
         # for use with bookmarklets
-        print "Executing my js"
+        print("Executing my js")
         return page.execute_javascript(self.env_get_my_js())
 
 if __name__ == "__main__":

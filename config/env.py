@@ -10,7 +10,8 @@ import config.our_envs
 import data.databuilder
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-import std_env
+from selenium.webdriver.chrome.options import Options
+from . import std_env
 import traceback
 
 
@@ -94,7 +95,7 @@ class Prod_Env(SystemEnv):
         #                                             "run_PROD.py can not be run multiprocess."
         # fail for multiprocess in Prod_env (above) or only warn (below)  # TODO add to config.our_envs.py
         if [] != [arg for arg in sys.argv if arg.startswith('--processes')]:
-            print "Warning: running multiprocess can be dangerous against Prod."
+            print("Warning: running multiprocess can be dangerous against Prod.")
         SystemEnv.__init__(self, *args)
 
     def create_data_builder(self):
@@ -272,7 +273,7 @@ class IPhone_OSBrowser(OSBrowserEnv):
     def env_driver(self):
         host = config.my_cfg.config['HOST']['IPHONE']
         dc = DesiredCapabilities.IPHONE
-        print dc, host
+        print(dc, host)
         return webdriver.Remote(desired_capabilities=dc,
                                 command_executor='http://%s/wd/hub' % host)
 
@@ -290,7 +291,7 @@ class Android_OSBrowser(OSBrowserEnv):
     def env_driver(self):
         host = config.my_cfg.config['HOST']['ANDROID']
         dc = DesiredCapabilities.ANDROID
-        print dc, host
+        print(dc, host)
         return webdriver.Remote(desired_capabilities=dc,
                                 command_executor='http://%s/wd/hub' % host)
 

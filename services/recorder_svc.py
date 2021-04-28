@@ -20,7 +20,7 @@ class StubRecorderSvc(BaseService):
         return self.SUCCESSFUL_TEARDOWN
 
     def do_post(self, path, headers, data):
-        print "POST to web service", path, headers, data
+        print("POST to web service", path, headers, data)
         return {'test_run_id': 123}
 
     def new_test_run(self):
@@ -30,7 +30,7 @@ class StubRecorderSvc(BaseService):
             self.test_pass_start_time = config.my_cfg.config.get('TEST_PASS_START_TIME', datetime.datetime.now().isoformat())
         test_pass_name = os.environ.get('BUILD_TAG', "Dev-%s-%s" % (self.username, self.test_pass_start_time))
 
-        print "new test run"
+        print("new test run")
 
         u = self.do_post("/test-run/new", headers={"Content-Type": "application/json"},
                                         data={'test_name':self.auto.find_automation_complete_name(),
@@ -49,7 +49,7 @@ class StubRecorderSvc(BaseService):
         try:
             encoded_values = json.dumps(record_info['values'])
         except TypeError:
-            print "!!!!!!WARNING!!!!!!: Failed to Encode to JSON. Are you passing a class?"
+            print("!!!!!!WARNING!!!!!!: Failed to Encode to JSON. Are you passing a class?")
             encoded_values = str(record_info['values'])
 
         u = self.do_post("/record/new", headers={"Content-Type": "application/json"},

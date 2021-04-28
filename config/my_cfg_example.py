@@ -10,7 +10,7 @@
 # https://blog.safaribooksonline.com/2014/11/18/intro-python-debugger/
 # self.set_highlight_delay()
 
-from env_enums import *
+from .env_enums import *
 from services.tracker_svc import *
 
 

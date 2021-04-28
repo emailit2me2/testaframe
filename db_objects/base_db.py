@@ -59,10 +59,10 @@ class BaseDb:
 
     def dumper(self, format, result):
         title,ret = self.dump_formatter(format, result)
-        print "%s: %d" % (title, len(ret))
+        print("%s: %d" % (title, len(ret)))
         #print "%d: %s" % (len(ret), format)
         for res in ret:
-            print "  %s" % res
+            print("  %s" % res)
 
     def dump_formatter(self, format, result):
         ret = []

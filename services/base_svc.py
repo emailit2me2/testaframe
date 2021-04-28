@@ -41,13 +41,13 @@ class BaseWebService(BaseService):
 
     def output(self, message, *args, **kwargs):
         if self.verbose:
-            print message.format(*args, **kwargs)
+            print(message.format(*args, **kwargs))
 
     def assert_env_allows_writes(self):
         # print "checking if writes are allowed"
         if not self.writes_allowed:
             raise SkipTest("no writes allowed in this env")
-        print "writes are allowed in this env"
+        print("writes are allowed in this env")
 
     def setup_requests_debugging(self):
         """Wrap up the logic to cause requests to provide deep debug logging of input & output."""
@@ -59,7 +59,7 @@ class BaseWebService(BaseService):
             import http.client as http_client
         except ImportError:
             # Python 2
-            import httplib as http_client
+            import http.client as http_client
         http_client.HTTPConnection.debuglevel = 1
 
         # You must initialize logging, otherwise you'll not see debug output.
@@ -99,7 +99,7 @@ class BaseWebService(BaseService):
             self.success(res)
         self.output("Used URL as {0}", res.url)
         self.output("Status: {0}", res.status_code)
-        self.output("Content: {0}", self._trim_output(res.text.encode('ascii', errors='replace'), 200))
+        self.output("Content: {0}", self._trim_output(str(res.text.encode('ascii', errors='replace')), 200))
         self.output("Headers: {0}", res.headers)
         return res
 
@@ -152,7 +152,7 @@ class BaseWebService(BaseService):
 
     @staticmethod
     def success(response):
-        print BaseWebService._trim_output(response.text, 200)
+        print(BaseWebService._trim_output(response.text, 200))
 
         if 400 <= response.status_code < 500:
             raise ClientError(response.status_code, response.text)

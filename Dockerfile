@@ -13,7 +13,7 @@ RUN sudo apt-get update && \
 
 ADD . /home/seluser/testaframe
 
-RUN pip install -r /home/seluser/testaframe/pip_requirements.txt && \
+RUN pip3 install -r /home/seluser/testaframe/pip_requirements.txt && \
  sudo ln -s /home/seluser/.local/bin/nosetests /usr/local/bin/nosetests
 
 WORKDIR /home/seluser/testaframe

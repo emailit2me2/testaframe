@@ -11,7 +11,7 @@
 """
 import traceback
 
-import example_db
+from . import example_db
 
 
 class DatabaseFactory(object):
@@ -26,21 +26,21 @@ class DatabaseFactory(object):
 
     def teardown_all(self):
         """Performs a teardown of all databases created by the factory."""
-        print "----------Begin Database Teardown----------"
+        print("----------Begin Database Teardown----------")
         teardown_success = True
 
         for db in reversed(self.generated_databases):
             try:
-                print "Tearing down: %s VVVVVVVVVVVVV" % repr(db)
+                print("Tearing down: %s VVVVVVVVVVVVV" % repr(db))
                 teardown_success = teardown_success and db.teardown()
-            except Exception, exc:
+            except Exception as exc:
                 teardown_success = False
                 traceback.print_exc()
-        print "-----------End Database Teardown-----------"
+        print("-----------End Database Teardown-----------")
         assert teardown_success, "Teardown steps within some databases encountered errors. (See above teardown output)"
 
     def _track_db(self, db):
-        print "Creating %s" % repr(db)
+        print("Creating %s" % repr(db))
         self.generated_databases.append(db)
         return db
 

@@ -14,7 +14,7 @@ class Environment(Enum):
 
 @unique
 class Host(Enum):
-    __order__ = """EMAIL SAMPLE TRACKER WIKIPEDIA"""
+    __order__ = """EMAIL SAMPLE TRACKER WIKIPEDIA WIKIPEDIA_API"""
 
     EMAIL = 'Email_Host'
     SAMPLE = 'Sample_Host'

@@ -3,7 +3,7 @@ import sys
 import time
 
 import config.our_envs
-from std_pages import StdPage
+from .std_pages import StdPage
 
 # There should never be any asserts in pages
 # All asserts should be in the tests.

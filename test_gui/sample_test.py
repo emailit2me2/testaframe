@@ -68,6 +68,6 @@ class TestSeGui(SampleTestBase):
     @attr("Example", "DataBase")
     def test_queries(self):
         results = self.example_db.get_employees()
-        print results
+        print(results)
 
         self.example_db.dump_db()

@@ -23,7 +23,7 @@ class ByBase(object):
 
     def __log_action(self, action):
         item_name = self.find_name()
-        print "%s on item %s" % (action, item_name)
+        print("%s on item %s" % (action, item_name))
 
     def find_name(self):
         """Find the name of a variable via introspection.
@@ -46,7 +46,7 @@ class ByBase(object):
         result = []
         for referrer in gc.get_referrers(self):
             if isinstance(referrer, dict):
-                for var_name, variable in referrer.iteritems():
+                for var_name, variable in referrer.items():
                     if variable is self and var_name not in self.NON_NAMES:
                         result.append(var_name)
     # TODO this is a good assert normally
@@ -192,26 +192,26 @@ class ByBase(object):
 
     def length_of(self):
         """Return the length of, really count of, of matching elements."""
-        print "  Checking length of %s" % (self)
+        print("  Checking length of %s" % (self))
         all = self.page.find_all(self, self.page.tracker.Record.DEFERRED)
         # print "   found all of %r" % all
         length = len(all)
-        print "    -got len = %r" % length
+        print("    -got len = %r" % length)
         self.page.tracker.track_all(self.page.tracker.Record.LENGTH_OF, message=self.stringify(),
                                     values=[length], locations=self.where_all(all))
         return length
 
     def length_of_displayed(self):
         """Return the length of, really count of, of matching elements that are displayed."""
-        print "  Checking length of displayed %s" % (self)
+        print("  Checking length of displayed %s" % (self))
         all = self.page.find_all(self, self.page.tracker.Record.DEFERRED)
         # print "   found all of %r" % all
         length = len(all)
-        print "    -got len = %r" % length
+        print("    -got len = %r" % length)
         count = 0
         for element in all:
             if element.is_displayed():
-                print "-is displayed", element
+                print("-is displayed", element)
                 count += 1
         self.page.tracker.track_all(record, message=self.stringify(), values=[count], locations=self.where_all(all))
         return count

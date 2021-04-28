@@ -8,9 +8,9 @@ C{std_page.py} should have project specifics in it.
 import re
 import sys
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import inspect
-import urlparse
+import urllib.parse
 import traceback
 
 import selenium
@@ -23,7 +23,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select
 
-import locate
+from . import locate
 
 
 class UnexpectedPageError(Exception):
@@ -96,7 +96,7 @@ class PageFactory(object):
             self.highlight_delay = self.default_highlight_delay
         else:
             self.highlight_delay = highlight_delay
-        print "Setting highlight delay to %r" % self.highlight_delay
+        print("Setting highlight delay to %r" % self.highlight_delay)
 
     def find_page_classes(self, modules):
         """Find all the classes in the given page modules
@@ -122,7 +122,7 @@ class PageFactory(object):
 
     def show_component(self, component_class, parent, params=''):
         """Make a new component object, verify it is being displayed."""
-        print "show component %s" % (component_class.__name__)
+        print("show component %s" % (component_class.__name__))
         new_component = self.make_component(component_class, parent, params)
         new_component.verify_component_showing()
         parent.components[new_component.ID] = new_component
@@ -135,7 +135,7 @@ class PageFactory(object):
 
     def show_form(self, form_class, parent, params=''):
         """Make a new form object, verify it is being displayed, and set it as current"""
-        print "show form %s" % (form_class.__name__)
+        print("show form %s" % (form_class.__name__))
         new_form = self.make_form(form_class, parent, params)
         new_form.verify_form_showing()
         parent.form = new_form
@@ -149,19 +149,19 @@ class PageFactory(object):
         plat_cls_name = page_class.__name__ + self.platform_suffix
         plat_class = self.classes.get(plat_cls_name, page_class)
         if page_class != plat_class:
-            print "Making a platform specific page: %s" % (plat_cls_name)
+            print("Making a platform specific page: %s" % (plat_cls_name))
         # end if a platform specific class exists
         new_page = plat_class(self, params, substitutions, **args_for_page)
 
         self.tracker.on_new_page()
 
-        print "-Created page object", new_page.__class__.__name__, params
+        print("-Created page object", new_page.__class__.__name__, params)
         self.tracker.track(self.tracker.Record.NEW_PAGE, str(new_page), value="%r & %r" % (new_page.full_url(), params))
         return new_page
 
     def on_page(self, page_class, params='', substitutions=(), **args_for_page):
         """Out with the old, in with the new, and verify it too."""
-        print "on page %s" % (page_class.__name__), params
+        print("on page %s" % (page_class.__name__), params)
         new_page = self.make_page(page_class, params, substitutions, **args_for_page)
         new_page.on_load()
         new_page.verify_on_page()
@@ -172,19 +172,19 @@ class PageFactory(object):
 
         TODO revisit and make new testaframe tests as examples.
         """
-        print "on page %s using %s" % (window_name, page_class.__name__)
+        print("on page %s using %s" % (window_name, page_class.__name__))
         new_page = page_class(self, params)
         new_page.window_name = window_name
         all_handles = self.driver.window_handles
         # It doesn't switch to it so we have to deduce which one
         self.handles[window_name] = all_handles[-1]  # assume the last one
-        print "Current handles %r" % self.handles.items()
+        print("Current handles %r" % list(self.handles.items()))
         self.switch_to_window_name(window_name)
         new_page.verify_on_page()
         return new_page
 
     def switch_to_window_name(self, window_name):
-        print "Switching to %s window by %r" % (window_name, self.handles[window_name])
+        print("Switching to %s window by %r" % (window_name, self.handles[window_name]))
         self.driver.switch_to_window(self.handles[window_name])
 
     def close_window_name(self, window_name):
@@ -201,7 +201,7 @@ class PageFactory(object):
         """
         self.tracker.track(self.tracker.Record.START_AT, "start at", value=page_class.__name__)
         new_page = self.make_page(page_class, params, substitutions, **args_for_page)
-        print "-Going to get %r" % (new_page.full_url())
+        print("-Going to get %r" % (new_page.full_url()))
         self.driver.get(new_page.full_url())
         new_page.on_load()
         if self.preclean:  # TODO only needed for IE, since ensureCleanSession doesn't work.
@@ -217,7 +217,7 @@ class PageFactory(object):
         return new_page
 
     def save_snap_file(self, snap_path):
-        print "saving snap file as: %s" % snap_path
+        print("saving snap file as: %s" % snap_path)
         self.driver.get_screenshot_as_file(snap_path)
 
 
@@ -264,7 +264,7 @@ class BaseUiObject(object):
 
         @param substitutions: An array of values to be applied to L{BasePage.PAGE_SUB}. Likely unused.
         """
-        print "-initing form %s with %r" % (self.__class__.__name__, params)
+        print("-initing form %s with %r" % (self.__class__.__name__, params))
         self.factory = parent.factory
         self.tracker = self.factory.tracker
         self.driver = self.factory.driver
@@ -293,15 +293,15 @@ class BaseUiObject(object):
         @see: L{BasePage.make_waiter}
         """
         # TODO all delays should be done so we can scale them up or down, ala squish's SCALE_FACTOR.
-        print "     !! waiting %d second(s) because %s !!" % (seconds, comment)
+        print("     !! waiting %d second(s) because %s !!" % (seconds, comment))
         time.sleep(seconds)
 
     def anno(*args, **kwargs):
         """Tests have @attr() and pages have anno()."""
         for name in args:
-            print "ATTR page:", name
-        for name, value in kwargs.iteritems():
-            print "ATTR page:", name, "=", repr(value)
+            print("ATTR page:", name)
+        for name, value in kwargs.items():
+            print("ATTR page:", name, "=", repr(value))
 
     def by_css(self, locator, log_type_into=True):
         """A DRY wrapper so we don't have to pass the page/form class in every locator definition."""
@@ -380,40 +380,40 @@ class BaseUiObject(object):
             start_with = self.driver
         #
         msg = "{0} {1}".format(sub + "element", element_spec)
-        print "Find " + msg
+        print("Find " + msg)
         start = time.time()
         exc = OperationTimedOutError("find_the timed out without error. This should NOT happen.")
         while time.time() - start < self.factory.poll_max:
             try:
                 ret = start_with.find_element(element_spec.by, element_spec.spec)
                 if not record_type:
-                    print "\n!!!ERROR missing record type!!!\n"
+                    print("\n!!!ERROR missing record type!!!\n")
                     raise Exception("missing record type")
                 if record_type == self.tracker.Record.DEFERRED:
-                    print "info: deferred for %s" % element_spec
+                    print("info: deferred for %s" % element_spec)
                 else:  # track it here and now
                     self.tracker.track(record_type=record_type, message=msg, location=self.where(ret))
                 #
                 self.highlight(ret)
-                print "  found", element_spec    # TODO
+                print("  found", element_spec)    # TODO
                 if ret:
                     if doit:
-                        print "  trying to do %r" % (doit,)
+                        print("  trying to do %r" % (doit,))
                         doit(ret)  # ret.click()
                     return ret
                 else:  # must be None
                     exc = ElementNotFoundError("  not found")
                     time.sleep(self.factory.poll_delay)
             except selenium.common.exceptions.NoSuchElementException:
-                print "  Waiting for element (%s): %5.2f secs" % (element_spec, time.time() - start)
+                print("  Waiting for element (%s): %5.2f secs" % (element_spec, time.time() - start))
                 exc = NoSuchElementError(" no such element matching {0}".format(element_spec))
                 time.sleep(self.factory.poll_delay)
             except selenium.common.exceptions.WebDriverException:
-                print "  Waiting for element (%s): %5.2f secs" % (element_spec, time.time() - start)
+                print("  Waiting for element (%s): %5.2f secs" % (element_spec, time.time() - start))
                 exc = WebDriverError(" web driver exception")
                 time.sleep(self.factory.poll_delay)
             except Exception as exc:
-                print "  Took general exception in find_the: %s" % (exc)
+                print("  Took general exception in find_the: %s" % (exc))
                 raise
             #
         # end while not timed out
@@ -431,19 +431,19 @@ class BaseUiObject(object):
             start_with = self.driver
             sub = ""
         #
-        print "find %selements %s" % (sub, element_spec)
+        print("find %selements %s" % (sub, element_spec))
 #    raw_input('waiting to find')
         start = time.time()
         exc = OperationTimedOutError("find_the timed out without error. This should NOT happen.")
         while time.time() - start < self.factory.poll_max:
             try:
                 ret = start_with.find_elements(element_spec.by, element_spec.spec)
-                print "  found %d element(s)" % len(ret)
+                print("  found %d element(s)" % len(ret))
                 if not record_type:
-                    print "\n!!!ERROR missing record type!!!\n"
+                    print("\n!!!ERROR missing record type!!!\n")
                     raise Exception("missing record type")
                 if record_type == self.tracker.Record.DEFERRED:
-                    print "info: deferred for %s" % element_spec
+                    print("info: deferred for %s" % element_spec)
                 else:  # track it here and now
                     self.tracker.track_all(record_type=record_type, message=str(element_spec),
                                            locations=self.where_all(ret))
@@ -451,11 +451,11 @@ class BaseUiObject(object):
                 self.highlight_all(ret)
                 return ret
             except selenium.common.exceptions.NoSuchElementException:
-                print "  Waiting for elements (%s): %5.2f secs" % (element_spec, time.time() - start)
+                print("  Waiting for elements (%s): %5.2f secs" % (element_spec, time.time() - start))
                 exc = NoSuchElementError(" no such elements matching {0}".format(element_spec))
                 time.sleep(self.factory.poll_delay)
             except selenium.common.exceptions.WebDriverException:
-                print "  Waiting for elements (%s): %5.2f secs" % (element_spec, time.time() - start)
+                print("  Waiting for elements (%s): %5.2f secs" % (element_spec, time.time() - start))
                 exc = WebDriverError(" web driver exception")
                 time.sleep(self.factory.poll_delay)
             except Exception as exc:
@@ -478,11 +478,11 @@ class BaseUiObject(object):
 
         try:
             e = start_with.find_element(element_spec.by, element_spec.spec)
-            print "Element can be found: %s" % (element_spec)
+            print("Element can be found: %s" % (element_spec))
             ret = True
             location = self.where(e)
         except selenium.common.exceptions.NoSuchElementException:
-            print "Element cannot be found: %s" % (element_spec)
+            print("Element cannot be found: %s" % (element_spec))
             ret = False
             location = None
         self.tracker.track(self.tracker.Record.CAN_FIND_THE, message=str(element_spec), location=location)
@@ -497,11 +497,11 @@ class BaseUiObject(object):
         """
         try:
             e = self.driver.find_element(element_spec.by, element_spec.spec)
-            print "Element not expected to have been found: %s" % (element_spec)
+            print("Element not expected to have been found: %s" % (element_spec))
             ret = False
             location = self.where(e)
         except selenium.common.exceptions.NoSuchElementException:
-            print "Should not find element and didn't %s" % (element_spec)
+            print("Should not find element and didn't %s" % (element_spec))
             ret = True
             location = None
         self.tracker.track(self.tracker.Record.SHOULD_NOT_FIND_THE, message=str(element_spec), location=location)
@@ -532,19 +532,19 @@ class BaseUiObject(object):
                     (not sure its needed any more).
         """
         e = self.find_the(element_spec, self.tracker.Record.CLICK, start_with, doit)
-        print "-click on %s" % (element_spec)
+        print("-click on %s" % (element_spec))
         if not doit:
             e.click()
 
     def move_to(self, element_spec, start_with=None):
         """Moves to an element."""
-        print "move to %s" % element_spec
+        print("move to %s" % element_spec)
         elem = self.find_the(element_spec, self.tracker.Record.MOVE_TO, start_with)
         ActionChains(self.driver).move_to_element(elem).perform()
 
     def move_and_click(self, element_spec, start_with=None):
         """Alternate click method sometimes needed for ajaxy elements."""
-        print "move and click on %s" % (element_spec)
+        print("move and click on %s" % (element_spec))
         ActionChains(self.driver).move_to_element(self.find_the(element_spec, self.tracker.Record.MOVE_AND_CLICK,
                                                   start_with)).click().perform()
 
@@ -563,17 +563,17 @@ class BaseUiObject(object):
                                      start_with=start_with)
             if len(elements) >= index + 1:
                 try:
-                    print "click on by index %s[%d]" % (element_spec, index)
+                    print("click on by index %s[%d]" % (element_spec, index))
                     self.tracker.track(self.tracker.Record.CLICK_ONE_OF_BY_INDEX_CLICK, message=str(element_spec),
                                        value=index, location=self.where(elements[index]))
                     elements[index].click()
                     return
                 except Exception as exc:
-                    print " Waiting for %d >= %d elements: %5.2f secs" % (len(elements), index + 1, time.time() - start)
+                    print(" Waiting for %d >= %d elements: %5.2f secs" % (len(elements), index + 1, time.time() - start))
                     time.sleep(self.factory.poll_delay)
                 #
             else:  # not enough elements found yet
-                print "  Waiting for %d >= %d elements: %5.2f secs" % (len(elements), index + 1, time.time() - start)
+                print("  Waiting for %d >= %d elements: %5.2f secs" % (len(elements), index + 1, time.time() - start))
                 time.sleep(self.factory.poll_delay)
             #
         # end while not timed out
@@ -602,7 +602,7 @@ class BaseUiObject(object):
             options = [el.text for el in elements]
             self.tracker.track_all(record, message=str(element_spec),
                                    values=options, locations=self.where_all(elements))
-            print options
+            print(options)
             try:
                 if exact:
                     found = options.index(text)
@@ -620,7 +620,7 @@ class BaseUiObject(object):
                 elements[found].click()
                 return
             except Exception as exc:
-                print "  Waiting for %r in %d elements: %5.2f secs" % (text, len(elements), time.time() - start)
+                print("  Waiting for %r in %d elements: %5.2f secs" % (text, len(elements), time.time() - start))
                 time.sleep(self.factory.poll_delay)
             #
         # end while not timed out
@@ -632,7 +632,7 @@ class BaseUiObject(object):
         Use this for standard HTML pages that use input tags
         """
         e = self.find_the(element_spec, self.tracker.Record.SELECT_THE, start_with)
-        print "select the %s" % (element_spec)
+        print("select the %s" % (element_spec))
         e.select()
 
     def select_from(self, element_spec, text, start_with=None):
@@ -643,12 +643,12 @@ class BaseUiObject(object):
         @see: click_one_of
         """
         e = self.find_the(element_spec, self.tracker.Record.SELECT_FROM, start_with)
-        print "select from %s choosing %r" % (element_spec, text)
+        print("select from %s choosing %r" % (element_spec, text))
         try:
             select = Select(e)
             select.select_by_visible_text(text)
         except UnexpectedTagNameException as exc:
-            print "WARNING: Try using click_one_of", exc
+            print("WARNING: Try using click_one_of", exc)
             raise
 
     def find_one_of_by_index(self, element_spec, index, start_with=None):
@@ -663,14 +663,14 @@ class BaseUiObject(object):
             e = self.find_all(element_spec, self.tracker.Record.FIND_ONE_OF_BY_INDEX, start_with)
             if len(e) >= index + 1:
                 try:
-                    print "Found by index %s[%d]" % (element_spec, index)
+                    print("Found by index %s[%d]" % (element_spec, index))
                     return e[index]
                 except Exception as exc:
-                    print "  Waiting for %d >= %d elements: %5.2f secs" % (len(e), index + 1, time.time() - start)
+                    print("  Waiting for %d >= %d elements: %5.2f secs" % (len(e), index + 1, time.time() - start))
                     time.sleep(self.factory.poll_delay)
                 #
             else:  # not enough elements found yet
-                print "  Waiting for %d >= %d elements: %5.2f secs" % (len(e), index + 1, time.time() - start)
+                print("  Waiting for %d >= %d elements: %5.2f secs" % (len(e), index + 1, time.time() - start))
                 time.sleep(self.factory.poll_delay)
             #
         # end while not timed out
@@ -686,12 +686,12 @@ class BaseUiObject(object):
         if not element_spec.log_type_into:  # Don't log passwords and such
             text = "**suppressed**"
         self.tracker.track(self.tracker.Record.TYPE_INTO, message=str(element_spec), value=text, location=self.where(e))
-        print "-type into %s = %r" % (element_spec, text)
+        print("-type into %s = %r" % (element_spec, text))
 
     def clear_field(self, element_spec):
         """Clear a text field"""
         e = self.find_the(element_spec, self.tracker.Record.CLEAR)
-        print "clear field %s" % (element_spec)
+        print("clear field %s" % (element_spec))
         e.clear()
 
     def make_waiter(self):
@@ -726,7 +726,7 @@ class WaiterWrapper:
         self.parent.tracker.track(self.parent.tracker.Record.POLL_START, 'Waiter')
         try:
             self.waiter.until(method, message)
-        except Exception, exc:
+        except Exception as exc:
             raise
         finally:
             self.parent.tracker.track(self.parent.tracker.Record.POLL_END, 'Waiter')
@@ -745,7 +745,7 @@ class BaseComponent(BaseUiObject):
 
     def verify_required_components(self, driver):
         if not self.verify_component_elements:
-            print "Please add locators to verify_component_elements list."
+            print("Please add locators to verify_component_elements list.")
             return False
 
         actual = True
@@ -791,7 +791,7 @@ class BaseForm(BaseComponent):
     def submit_form(self, element_spec):
         """Submit a form"""
         form = self.find_the(element_spec, self.tracker.Record.SUBMIT_FORM)
-        print "-submit form %s" % (element_spec)
+        print("-submit form %s" % (element_spec))
         form.submit()
 
 
@@ -853,26 +853,26 @@ class BasePage(BaseForm):
     def full_url(self):
         """Create the full URL for this page."""
         base_url = self.factory.env.get_url(self.HOST_ENUM)
-        url = urlparse.urljoin(base_url, self.PAGE + self.params)
-        print "-Full url is %s" % url
+        url = urllib.parse.urljoin(base_url, self.PAGE + self.params)
+        print("-Full url is %s" % url)
         return url
 
     def refresh_page(self):
         """Wrapper to referesh the page."""
-        print "-Refreshing page"
+        print("-Refreshing page")
         self.tracker.track(self.tracker.Record.REFRESH_PAGE, 'same page')
         self.driver.refresh()
 
     def refresh_page_with_redir(self, redir_page):
         """Wrapper to referesh the page which causes a redirection to another page."""
-        print "Refreshing page which should redir to %s" % redir_page
+        print("Refreshing page which should redir to %s" % redir_page)
         self.tracker.track(self.tracker.Record.REFRESH_PAGE, 'redir to', value=str(redir_page))
         self.refresh_page()
         return self.now_on(redir_page)
 
     def go_back(self, page_class):
         """Wrapper to go back to the previous page."""
-        print "Go back"
+        print("Go back")
         self.driver.back()
         return self.now_on(page_class)
 
@@ -892,18 +892,18 @@ class BasePage(BaseForm):
         return self.driver.execute_script('scrollTo(0,0);return document.body.scrollHeight')
 
     def scroll_to(self, target):
-        print "scrollTo(0, %f); return document.body.scrollHeight" % target.int_of_attribute_of('offsetTop')
+        print("scrollTo(0, %f); return document.body.scrollHeight" % target.int_of_attribute_of('offsetTop'))
         return self.driver.execute_script(
             'scrollTo(0, %f); return document.body.scrollHeight' % target.int_of_attribute_of('offsetTop'))
 
     def goto_page(self, page_class, params='', substitutions=()):
         """Used to go directly to another page."""
-        print "Goto page %s using %s" % (page_class.__name__, params)
+        print("Goto page %s using %s" % (page_class.__name__, params))
         return self.factory.at(page_class, params, substitutions)
 
     def goto_page_with_redir(self, page_class, redir_page, params='', substitutions=()):
         """Wrapper to go to the page which causes a redirection to another page."""
-        print "Goto page %s which should redir to %s using %s" % (page_class.__name__, redir_page, params)
+        print("Goto page %s which should redir to %s using %s" % (page_class.__name__, redir_page, params))
         self.factory.at(page_class, params, substitutions, skip_verify=True)
         return self.now_on(redir_page)
 
@@ -922,26 +922,26 @@ class BasePage(BaseForm):
         # we should inherit the window name
         if (self.window_name != self.factory.MAIN_WINDOW):
             new_page.window_name = self.window_name
-        print "Now on %s with window_name %s" % (page_class.__name__, new_page.window_name)
+        print("Now on %s with window_name %s" % (page_class.__name__, new_page.window_name))
         self.driver = ObsoletePage()
         return new_page
 
     def new_window(self, page_class, window_name):
-        print "Now on %s window using %s" % (window_name, page_class.__name__)
+        print("Now on %s window using %s" % (window_name, page_class.__name__))
         return self.factory.in_window(page_class, '', window_name)
 
     def get_path(self):
         """Get the path for the current page."""
         url = self.driver.current_url
-        obj = urlparse.urlparse(url)
+        obj = urllib.parse.urlparse(url)
         path = obj.path
-        print "-Current url %r" % url, path, obj.fragment
+        print("-Current url %r" % url, path, obj.fragment)
         return path
 
     def get_title(self):
         """Wrapper to get the page title"""
         title = self.driver.title
-        print "Current title %r" % title
+        print("Current title %r" % title)
         return title
 
     def verify_on_page(self):
@@ -971,8 +971,8 @@ class BasePage(BaseForm):
                 path_is = self.get_path()
                 pattern = self.PAGE_RE % self.__dict__
                 to_match = re.compile(pattern)
-                print "-Verifying %s path pattern %r matches %r" % (
-                    self.__class__.__name__, self.PAGE_RE, path_is)
+                print("-Verifying %s path pattern %r matches %r" % (
+                    self.__class__.__name__, self.PAGE_RE, path_is))
                 if not to_match.search(path_is):
                     raise UnexpectedPageError("FAIL: Expected URL %r does NOT match actual URL %r" %
                                               (self.PAGE_RE, path_is))
@@ -982,14 +982,14 @@ class BasePage(BaseForm):
                 if hasattr(self, 'form'):  # TODO need a null object form here
                     self.form.verify_form_showing()
                 
-                for component in self.components.values():
+                for component in list(self.components.values()):
                     component.verify_component_showing()
 
                 # self.tracker.track(self.tracker.Record.SNAP, "Now On: verified", value=self.__class__.__name__)
 
                 return
             except UnexpectedPageError as exc:
-                print "  Waiting for verify on page: %5.2f secs of %5.2f" % (time.time() - start, max_wait_time)
+                print("  Waiting for verify on page: %5.2f secs of %5.2f" % (time.time() - start, max_wait_time))
                 time.sleep(self.factory.poll_delay)
             except:
                 raise
@@ -1002,7 +1002,7 @@ class BasePage(BaseForm):
 
         @see: L{now_on}
         """
-        print "Now showing {component_class.__name__}".format(**locals())
+        print("Now showing {component_class.__name__}".format(**locals()))
         self.factory.show_component(component_class, self, params)
 
     def now_showing_form(self, form_class, params=''):
@@ -1010,14 +1010,14 @@ class BasePage(BaseForm):
 
         @see: L{now_on}
         """
-        print "Now showing %s" % form_class.__name__
+        print("Now showing %s" % form_class.__name__)
         self.factory.show_form(form_class, self, params)
 
     def switch_to_it(self):
         self.factory.switch_to_window_name(self.window_name)
 
     def close_it(self):
-        print "Closing window %s" % self.window_name
+        print("Closing window %s" % self.window_name)
         self.factory.close_window_name(self.window_name)
 
     def get_page_source(self):
@@ -1027,19 +1027,19 @@ class BasePage(BaseForm):
     def get_cookie(self, name):
         """Get named cookie and unquote it."""
         cookie = self.driver.get_cookie(name)
-        ser = urllib.unquote(cookie['value'])
-        print "-Getting cookie %r = %r" % (name, ser)
+        ser = urllib.parse.unquote(cookie['value'])
+        print("-Getting cookie %r = %r" % (name, ser))
         self.tracker.track(self.tracker.Record.GET_COOKIE, name, ser)
         return ser
 
     def set_cookie(self, cookie, value):
         """Set cookie"""
-        print "-Setting cookie %r = %r" % (cookie, value)
+        print("-Setting cookie %r = %r" % (cookie, value))
 
         # TODO extract the domain from this hard coded string
         cookie_script = 'document.cookie = "{cookie}={value}; path=/; domain=.example.com;"'.format(**locals())
 
-        print "-Executing %r" % cookie_script
+        print("-Executing %r" % cookie_script)
         self.tracker.track(self.tracker.Record.SET_COOKIE, cookie, value)
         self.driver.execute_script(cookie_script)
 
@@ -1062,10 +1062,10 @@ class AlertObj(object):
 
     def __init__(self, driver):
         self.alert = Alert(driver)
-        print "Creating alert"
+        print("Creating alert")
 
     def choose_accept(self):
         """Wrapper for accepting the alert."""
-        print "Choosing accept on alert"
+        print("Choosing accept on alert")
         self.alert.accept()
-        print "Accept chosen on alert"
+        print("Accept chosen on alert")

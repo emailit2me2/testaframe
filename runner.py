@@ -12,7 +12,7 @@ def check_no_missing_files(test_dir, module_list, excludes):
     module_names = set([m.__name__ for m in module_list])
     for module in sorted(glob.glob('%s/*_test.py' % test_dir)):
         pkg_module = test_dir + "." + module.split('/')[-1].split('.')[0]
-        assert ((pkg_module in sys.modules.keys()) or
+        assert ((pkg_module in list(sys.modules.keys())) or
                 (pkg_module in excludes)), "Found %s in file system but not imported here" % pkg_module
         assert ((pkg_module in module_names) or
                 (pkg_module in excludes)), "Found %s in file system but not in module list" % pkg_module
@@ -71,7 +71,7 @@ class {curr_module_filename}{FIELD_SEP}{curr_browser}{FIELD_SEP}{curr_environmen
                     for curr_browser in browsers:
 
                         # Make {count} copies of the definition.
-                        for pass_number in xrange(count):
+                        for pass_number in range(count):
 
                             # Build a pass number clause for the derivative class name when requesting more than one
                             # pass be run.

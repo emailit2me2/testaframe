@@ -1,7 +1,7 @@
 
 from nose.plugins.attrib import attr
 
-import base_tst
+from . import base_tst
 
 import services.svc_factory
 
@@ -11,10 +11,10 @@ class StdApiTestBase(base_tst.TestCaseBase):
 
     def setUp(self):
         base_tst.TestCaseBase.setUp(self)
-        print "Setup ^^^^^^^^^^^^^^^^^^^^^^^^"
+        print("Setup ^^^^^^^^^^^^^^^^^^^^^^^^")
 
     def tearDown(self):
-        print "Teardown vvvvvvvvvvvvvvvvvvvvv"
+        print("Teardown vvvvvvvvvvvvvvvvvvvvv")
         base_tst.TestCaseBase.tearDown(self)
 
 
@@ -23,10 +23,10 @@ class StdGuiTestBase(base_tst.GuiTestCaseBase):
 
     def setUp(self):
         base_tst.GuiTestCaseBase.setUp(self)
-        print "Setup ^^^^^^^^^^^^^^^^^^^^^^^^"
+        print("Setup ^^^^^^^^^^^^^^^^^^^^^^^^")
 
     def tearDown(self):
-        print "Teardown vvvvvvvvvvvvvvvvvvvvv"
+        print("Teardown vvvvvvvvvvvvvvvvvvvvv")
         base_tst.GuiTestCaseBase.tearDown(self)
 
 

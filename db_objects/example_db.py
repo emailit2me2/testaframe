@@ -1,7 +1,7 @@
 
 from enum import unique, Enum
 
-import base_db
+from . import base_db
 
 
 class ExampleDb(base_db.BaseDb):
@@ -31,7 +31,7 @@ class ExampleDb(base_db.BaseDb):
         return self.EmployeeState(row['state']).name
 
     def dump_db(self):
-        print "----------------- Dumping example DB Stuff -----------------"
+        print("----------------- Dumping example DB Stuff -----------------")
         employees = self.get_employees()
         self.dumper(self.EMPLOYEES_DUMP, employees)
 
@@ -39,7 +39,7 @@ class ExampleDb(base_db.BaseDb):
         """This is designed to take an argument with the items of interest.
         For example if you created Employees in the test then pass the Employee IDs to limit the dump.
         """
-        print "----------------- Dumping example DB Stuff -----------------"
+        print("----------------- Dumping example DB Stuff -----------------")
         Employees = self.get_employees()
         self.dumper(self.EMPLOYEES_DUMP, Employees)
 

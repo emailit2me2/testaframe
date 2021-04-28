@@ -46,10 +46,10 @@ Next, you will need to create a personal `my_cfg.py` on your local machine by
 using `my_cfg_example.py` as an example. Create one using
 
 ``` bash
-cp my_cfg_example.py my_cfg.py
+cp config/my_cfg_example.py config/my_cfg.py
 ```
 
-The `my_cfg.py` file should be .ignored in your source control.
+The `config/my_cfg.py` file should be .ignored in your source control.
 
 Setting up the Docker environment is simple.
 
@@ -77,7 +77,7 @@ To observe a test run in progress you can attach to the container by using any V
 
 ### System configuration
 
-You will need Python 2.7 installed.
+You will need Python 3.9 installed.
 
 Clone the [testaframe repo](https://github.com/emailit2me2/testaframe)
 to your local box.
@@ -89,14 +89,14 @@ Required libraries (optional packages are commented out) in
 sudo pip install -r pip_requirements.txt
 ```
 
-You will need to create a personal `my_cfg.py` on your local machine by
-using `my_cfg_example.py` as an example. Create one using
+You will need to create a personal `config/my_cfg.py` on your local machine by
+using `config/my_cfg_example.py` as an example. Create one using
 
 ``` {.sourceCode .}
-cp my_cfg_example.py my_cfg.py
+cp config/my_cfg_example.py config/my_cfg.py
 ```
 
-The `my_cfg.py` file should be .ignored in your source control.
+The `config/my_cfg.py` file should be .ignored in your source control.
 
 ### Running the tests
 
@@ -123,7 +123,7 @@ can use these pages to show more features of Testaframe. Look in
 
 To run the the "Sample" tests you will need to
 
-1. Clone the [selenium repo](https://code.google.com/p/selenium/) locally
+1. Clone the [selenium repo](https://github.com/SeleniumHQ/selenium) locally
 2. Open a terminal and `cd` to `selenium/common/src/web`
 3. Start a simple http server then run the tests
 
